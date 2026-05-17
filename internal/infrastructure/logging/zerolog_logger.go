@@ -5,16 +5,17 @@ import (
 	"os"
 	"time"
 
+	loggeriface "github.com/arthurhzna/go-clean-architecture/internal/domain/interface/logging"
 	"github.com/rs/zerolog"
 )
 
-type zerologLogger struct {
+type ZeroLogger struct {
 	log *zerolog.Logger
 }
 
 func NewZeroLogger(
 	level int,
-) *zerologLogger {
+) *ZeroLogger {
 
 	log := zerolog.
 		New(
@@ -34,28 +35,28 @@ func NewZeroLogger(
 		Int("pid", os.Getpid()).
 		Logger()
 
-	return &zerologLogger{
+	return &ZeroLogger{
 		log: &log,
 	}
 }
 
-func (l *zerologLogger) GetWriter() io.Writer {
+func (l *ZeroLogger) GetWriter() io.Writer {
 	return l.log
 }
 
-func (l *zerologLogger) Printf(
+func (l *ZeroLogger) Printf(
 	format string,
 	args ...any,
 ) {
 	l.log.Printf(format, args...)
 }
 
-func (l *zerologLogger) Error(args ...any) {
+func (l *ZeroLogger) Error(args ...any) {
 	l.log.Error().
 		Msg(argsToString(args...))
 }
 
-func (l *zerologLogger) Errorf(
+func (l *ZeroLogger) Errorf(
 	format string,
 	args ...any,
 ) {
@@ -63,12 +64,12 @@ func (l *zerologLogger) Errorf(
 		Msgf(format, args...)
 }
 
-func (l *zerologLogger) Fatal(args ...any) {
+func (l *ZeroLogger) Fatal(args ...any) {
 	l.log.Fatal().
 		Msg(argsToString(args...))
 }
 
-func (l *zerologLogger) Fatalf(
+func (l *ZeroLogger) Fatalf(
 	format string,
 	args ...any,
 ) {
@@ -76,12 +77,12 @@ func (l *zerologLogger) Fatalf(
 		Msgf(format, args...)
 }
 
-func (l *zerologLogger) Info(args ...any) {
+func (l *ZeroLogger) Info(args ...any) {
 	l.log.Info().
 		Msg(argsToString(args...))
 }
 
-func (l *zerologLogger) Infof(
+func (l *ZeroLogger) Infof(
 	format string,
 	args ...any,
 ) {
@@ -89,12 +90,12 @@ func (l *zerologLogger) Infof(
 		Msgf(format, args...)
 }
 
-func (l *zerologLogger) Warn(args ...any) {
+func (l *ZeroLogger) Warn(args ...any) {
 	l.log.Warn().
 		Msg(argsToString(args...))
 }
 
-func (l *zerologLogger) Warnf(
+func (l *ZeroLogger) Warnf(
 	format string,
 	args ...any,
 ) {
@@ -102,12 +103,12 @@ func (l *zerologLogger) Warnf(
 		Msgf(format, args...)
 }
 
-func (l *zerologLogger) Debug(args ...any) {
+func (l *ZeroLogger) Debug(args ...any) {
 	l.log.Debug().
 		Msg(argsToString(args...))
 }
 
-func (l *zerologLogger) Debugf(
+func (l *ZeroLogger) Debugf(
 	format string,
 	args ...any,
 ) {
@@ -115,7 +116,7 @@ func (l *zerologLogger) Debugf(
 		Msgf(format, args...)
 }
 
-func (l *zerologLogger) WithField(key string, value any) Logger {
+func (l *ZeroLogger) WithField(key string, value any) loggeriface.Logger {
 	var log zerolog.Logger
 	if err, ok := value.(error); ok {
 		log = l.log.With().Err(err).Logger()
@@ -123,12 +124,12 @@ func (l *zerologLogger) WithField(key string, value any) Logger {
 		log = l.log.With().Any(key, value).Logger()
 	}
 
-	return &zerologLogger{
+	return &ZeroLogger{
 		log: &log,
 	}
 }
 
-func (l *zerologLogger) WithFields(fields map[string]any) Logger {
+func (l *ZeroLogger) WithFields(fields map[string]any) loggeriface.Logger {
 	logCtx := l.log.With()
 	for k, v := range fields {
 		if errs, ok := v.([]error); ok {
@@ -141,7 +142,7 @@ func (l *zerologLogger) WithFields(fields map[string]any) Logger {
 	}
 
 	log := logCtx.Logger()
-	return &zerologLogger{
+	return &ZeroLogger{
 		log: &log,
 	}
 }

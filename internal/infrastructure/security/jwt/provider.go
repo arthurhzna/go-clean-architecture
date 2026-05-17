@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	interfaces "github.com/arthurhzna/go-clean-architecture/internal/domain/interface/security/jwt"
+	jwtiface "github.com/arthurhzna/go-clean-architecture/internal/domain/interface/security/jwt"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
@@ -59,7 +59,7 @@ func (h *JwtUtil) Sign(
 
 func (h *JwtUtil) Parse(
 	tokenString string,
-) (*interfaces.JWTClaims, error) {
+) (*jwtiface.JWTClaims, error) {
 
 	parser := jwt.NewParser(
 		jwt.WithValidMethods(h.allowedAlgs),
@@ -84,9 +84,7 @@ func (h *JwtUtil) Parse(
 		return nil, errors.New("token not valid")
 	}
 
-	return &interfaces.JWTClaims{
+	return &jwtiface.JWTClaims{
 		UserID: claims.UserID,
 	}, nil
 }
-
-var _ interfaces.IJwtUtil = (*JwtUtil)(nil)

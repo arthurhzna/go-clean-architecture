@@ -1,0 +1,65 @@
+package database
+
+import (
+	"context"
+	"database/sql"
+
+	persistenceiface "github.com/arthurhzna/go-clean-architecture/internal/domain/interface/persistence"
+
+	repositoryiface "github.com/arthurhzna/go-clean-architecture/internal/domain/interface/persistence/repository"
+
+	dbtx "github.com/arthurhzna/go-clean-architecture/internal/infrastructure/persistence/dbtx"
+
+	"github.com/arthurhzna/go-clean-architecture/internal/infrastructure/persistence/repositories"
+
+	"github.com/jmoiron/sqlx"
+)
+
+type unitOfWork struct {
+	conn *sqlx.DB
+	db   dbtx.DBTX
+}
+
+func NewUnitOfWork(
+	db *sqlx.DB,
+) persistenceiface.UnitOfWork {
+	return &unitOfWork{
+		conn: db,
+		db:   db,
+	}
+}
+
+func (u *unitOfWork) WithTransaction(
+	ctx context.Context,
+	fn func(persistenceiface.UnitOfWork) error,
+) error {
+
+	tx, err := u.conn.BeginTxx(
+		ctx,
+		&sql.TxOptions{},
+	)
+	if err != nil {
+		return err
+	}
+
+	transactionalUow := &unitOfWork{
+		conn: u.conn,
+		db:   tx,
+	}
+
+	err = fn(transactionalUow)
+	if err != nil {
+
+		if rollbackErr := tx.Rollback(); rollbackErr != nil {
+			return err
+		}
+
+		return err
+	}
+
+	return tx.Commit()
+}
+
+func (u *unitOfWork) DeviceRepository() repositoryiface.DeviceRepository {
+	return repositories.NewDeviceRepository(u.db)
+}

@@ -1,36 +1,35 @@
-package database
+package bootstrap
 
 import (
-	"fmt"
-	"time"
-
-	"github.com/JordanMarcelino/go-gin-starter/internal/config"
-	"github.com/JordanMarcelino/go-gin-starter/internal/pkg/logger"
-	_ "github.com/jackc/pgx/v5/stdlib"
+	"github.com/arthurhzna/go-clean-architecture/internal/config"
+	"github.com/arthurhzna/go-clean-architecture/internal/infrastructure/logging"
+	"github.com/arthurhzna/go-clean-architecture/internal/infrastructure/persistence/database"
 	"github.com/jmoiron/sqlx"
 )
 
-func InitPostgres(cfg *config.Config) *sqlx.DB {
+func NewDatabase(
+	cfg *config.Config,
+	log *logging.ZeroLogger,
+) *sqlx.DB {
+
 	dbCfg := cfg.Database
 
-	dsn := fmt.Sprintf(
-		"host=%s user=%s password=%s dbname=%s port=%d sslmode=%s TimeZone=Asia/Jakarta",
+	db := database.NewDatabase(
 		dbCfg.Host,
+		dbCfg.Port,
 		dbCfg.Username,
 		dbCfg.Password,
 		dbCfg.DbName,
-		dbCfg.Port,
 		dbCfg.Sslmode,
+		dbCfg.MaxIdleConn,
+		dbCfg.MaxOpenConn,
+		dbCfg.MaxConnLifetime,
 	)
 
-	db, err := sqlx.Connect("pgx", dsn)
+	pool, err := db.Connect()
 	if err != nil {
-		logger.Log.Fatalf("error connecting to database: %v", err)
+		log.Fatal(err)
 	}
 
-	db.SetMaxIdleConns(dbCfg.MaxIdleConn)
-	db.SetMaxOpenConns(dbCfg.MaxOpenConn)
-	db.SetConnMaxLifetime(time.Duration(dbCfg.MaxConnLifetime) * time.Minute)
-
-	return db
+	return pool
 }
