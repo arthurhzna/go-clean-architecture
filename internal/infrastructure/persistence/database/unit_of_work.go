@@ -63,3 +63,7 @@ func (u *unitOfWork) WithTransaction(
 func (u *unitOfWork) DeviceRepository() repositoryiface.DeviceRepository {
 	return repositories.NewDeviceRepository(u.db)
 }
+
+func (u *unitOfWork) DeviceLogRepository() repositoryiface.DeviceLogRepository {
+	return repositories.NewDeviceLogRepository(u.db)
+}

@@ -13,4 +13,5 @@ type UnitOfWork interface {
 	) error
 
 	DeviceRepository() repositoryiface.DeviceRepository
+	DeviceLogRepository() repositoryiface.DeviceLogRepository
 }
