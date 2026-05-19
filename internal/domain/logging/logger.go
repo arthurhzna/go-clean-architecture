@@ -1,10 +1,6 @@
 package logging
 
-import "io"
-
 type Logger interface {
-	GetWriter() io.Writer
-
 	Printf(format string, args ...any)
 
 	Error(args ...any)

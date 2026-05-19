@@ -10,7 +10,7 @@ import (
 
 	dbtx "github.com/arthurhzna/go-clean-architecture/internal/infrastructure/persistence/dbtx"
 
-	"github.com/arthurhzna/go-clean-architecture/internal/infrastructure/persistence/repositories"
+	repositories "github.com/arthurhzna/go-clean-architecture/internal/infrastructure/persistence/repository"
 
 	"github.com/jmoiron/sqlx"
 )

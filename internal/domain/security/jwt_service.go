@@ -1,8 +1,4 @@
-package jwt
-
-type JWTClaims struct {
-	UserID int64
-}
+package security
 
 type JWTService interface {
 	Sign(userID int64) (string, error)
