@@ -64,6 +64,6 @@ func (u *unitOfWork) DeviceRepository() repositoryiface.DeviceRepository {
 	return repositories.NewDeviceRepository(u.db)
 }
 
-func (u *unitOfWork) DeviceLogRepository() repositoryiface.DeviceLogRepository {
-	return repositories.NewDeviceLogRepository(u.db)
+func (u *unitOfWork) UserRepository() repositoryiface.UserRepository {
+	return repositories.NewUserRepository(u.db)
 }
