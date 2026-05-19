@@ -4,9 +4,7 @@ import (
 	"context"
 	"database/sql"
 
-	persistenceiface "github.com/arthurhzna/go-clean-architecture/internal/domain/interface/persistence"
-
-	repositoryiface "github.com/arthurhzna/go-clean-architecture/internal/domain/interface/persistence/repository"
+	repositoryiface "github.com/arthurhzna/go-clean-architecture/internal/domain/repository"
 
 	dbtx "github.com/arthurhzna/go-clean-architecture/internal/infrastructure/persistence/dbtx"
 
@@ -22,7 +20,7 @@ type unitOfWork struct {
 
 func NewUnitOfWork(
 	db *sqlx.DB,
-) persistenceiface.UnitOfWork {
+) repositoryiface.UnitOfWork {
 	return &unitOfWork{
 		conn: db,
 		db:   db,
@@ -31,7 +29,7 @@ func NewUnitOfWork(
 
 func (u *unitOfWork) WithTransaction(
 	ctx context.Context,
-	fn func(persistenceiface.UnitOfWork) error,
+	fn func(repositoryiface.UnitOfWork) error,
 ) error {
 
 	tx, err := u.conn.BeginTxx(

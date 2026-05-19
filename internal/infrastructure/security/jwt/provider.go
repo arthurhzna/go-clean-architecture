@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	jwtiface "github.com/arthurhzna/go-clean-architecture/internal/domain/interface/security/jwt"
+	jwtiface "github.com/arthurhzna/go-clean-architecture/internal/domain/security"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"

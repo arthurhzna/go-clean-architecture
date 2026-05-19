@@ -5,7 +5,7 @@ import (
 
 	"github.com/arthurhzna/go-clean-architecture/internal/domain/entity"
 
-	repositoryiface "github.com/arthurhzna/go-clean-architecture/internal/domain/interface/persistence/repository"
+	repositoryiface "github.com/arthurhzna/go-clean-architecture/internal/domain/repository"
 
 	dbtx "github.com/arthurhzna/go-clean-architecture/internal/infrastructure/persistence/dbtx"
 )

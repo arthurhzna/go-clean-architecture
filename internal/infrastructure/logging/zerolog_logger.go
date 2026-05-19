@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	loggingiface "github.com/arthurhzna/go-clean-architecture/internal/domain/interface/logging"
+	loggingiface "github.com/arthurhzna/go-clean-architecture/internal/domain/logging"
 	"github.com/rs/zerolog"
 )
 
