@@ -1,5 +1,3 @@
-// internal/application/usecase/device_usecase.go
-
 package usecase
 
 import (
@@ -10,6 +8,8 @@ import (
 
 	"github.com/arthurhzna/go-clean-architecture/internal/application/validation/builder"
 	"github.com/arthurhzna/go-clean-architecture/internal/application/validation/rule"
+
+	errordomain "github.com/arthurhzna/go-clean-architecture/internal/domain/error"
 
 	repositoryiface "github.com/arthurhzna/go-clean-architecture/internal/domain/repository"
 )
@@ -46,6 +46,10 @@ func (u *DeviceUseCase) FindByID(
 
 	if err != nil {
 		return nil, err
+	}
+
+	if device == nil {
+		return nil, errordomain.ErrDeviceNotFound
 	}
 
 	return &appresponse.DeviceResponse{
