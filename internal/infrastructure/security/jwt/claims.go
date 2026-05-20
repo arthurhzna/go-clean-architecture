@@ -5,4 +5,5 @@ import "github.com/golang-jwt/jwt/v5"
 type jwtClaims struct {
 	jwt.RegisteredClaims
 	UserID int64 `json:"user_id"`
+	RoleID int64 `json:"role_id"`
 }

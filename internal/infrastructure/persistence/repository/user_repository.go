@@ -1,23 +1,32 @@
 package repository
 
 import (
-	"database/sql"
+	"context"
 
 	"github.com/arthurhzna/go-clean-architecture/internal/domain/entity"
-	domainrepo "github.com/arthurhzna/go-clean-architecture/internal/domain/repository"
+
+	repositoryiface "github.com/arthurhzna/go-clean-architecture/internal/domain/repository"
+
+	dbtx "github.com/arthurhzna/go-clean-architecture/internal/infrastructure/persistence/dbtx"
 )
 
 type userRepository struct {
-	db *sql.DB
+	db dbtx.DBTX
 }
 
-func NewUserRepository(db *sql.DB) domainrepo.UserRepository {
+func NewUserRepository(
+	db dbtx.DBTX,
+) repositoryiface.UserRepository {
 	return &userRepository{
 		db: db,
 	}
 }
 
-func (r *userRepository) Create(user *entity.User) error {
+func (r *userRepository) Create(
+	ctx context.Context,
+	user *entity.User,
+) error {
+
 	query := `
 		INSERT INTO users (
 			uuid,
@@ -28,24 +37,38 @@ func (r *userRepository) Create(user *entity.User) error {
 			created_at,
 			updated_at
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?)
+		VALUES (
+			$1,
+			$2,
+			$3,
+			$4,
+			$5,
+			$6,
+			$7
+		)
+		RETURNING id
 	`
 
-	_, err := r.db.Exec(
+	return r.db.QueryRowxContext(
+		ctx,
 		query,
-		user.UUID.String(),
+		user.UUID,
 		user.Name,
 		user.Email,
 		user.Password,
 		user.RoleID,
 		user.CreatedAt,
 		user.UpdatedAt,
+	).Scan(
+		&user.ID,
 	)
-
-	return err
 }
 
-func (r *userRepository) FindByID(id string) (*entity.User, error) {
+func (r *userRepository) FindByUUID(
+	ctx context.Context,
+	uuid string,
+) (*entity.User, error) {
+
 	query := `
 		SELECT
 			id,
@@ -57,15 +80,18 @@ func (r *userRepository) FindByID(id string) (*entity.User, error) {
 			created_at,
 			updated_at
 		FROM users
-		WHERE uuid = ?
+		WHERE uuid = $1
 	`
 
 	var user entity.User
-	var uuidStr string
 
-	err := r.db.QueryRow(query, id).Scan(
+	err := r.db.QueryRowxContext(
+		ctx,
+		query,
+		uuid,
+	).Scan(
 		&user.ID,
-		&uuidStr,
+		&user.UUID,
 		&user.Name,
 		&user.Email,
 		&user.Password,
@@ -81,7 +107,11 @@ func (r *userRepository) FindByID(id string) (*entity.User, error) {
 	return &user, nil
 }
 
-func (r *userRepository) FindByEmail(email string) (*entity.User, error) {
+func (r *userRepository) FindByEmail(
+	ctx context.Context,
+	email string,
+) (*entity.User, error) {
+
 	query := `
 		SELECT
 			id,
@@ -93,15 +123,18 @@ func (r *userRepository) FindByEmail(email string) (*entity.User, error) {
 			created_at,
 			updated_at
 		FROM users
-		WHERE email = ?
+		WHERE email = $1
 	`
 
 	var user entity.User
-	var uuidStr string
 
-	err := r.db.QueryRow(query, email).Scan(
+	err := r.db.QueryRowxContext(
+		ctx,
+		query,
+		email,
+	).Scan(
 		&user.ID,
-		&uuidStr,
+		&user.UUID,
 		&user.Name,
 		&user.Email,
 		&user.Password,
@@ -117,38 +150,51 @@ func (r *userRepository) FindByEmail(email string) (*entity.User, error) {
 	return &user, nil
 }
 
-func (r *userRepository) Update(user *entity.User) error {
+func (r *userRepository) Update(
+	ctx context.Context,
+	user *entity.User,
+) error {
+
 	query := `
 		UPDATE users
 		SET
-			name = ?,
-			email = ?,
-			password = ?,
-			role_id = ?,
-			updated_at = ?
-		WHERE uuid = ?
+			name = $1,
+			email = $2,
+			password = $3,
+			role_id = $4,
+			updated_at = $5
+		WHERE uuid = $6
 	`
 
-	_, err := r.db.Exec(
+	_, err := r.db.ExecContext(
+		ctx,
 		query,
 		user.Name,
 		user.Email,
 		user.Password,
 		user.RoleID,
 		user.UpdatedAt,
-		user.UUID.String(),
+		user.UUID,
 	)
 
 	return err
 }
 
-func (r *userRepository) Delete(id string) error {
+func (r *userRepository) DeleteByUUID(
+	ctx context.Context,
+	uuid string,
+) error {
+
 	query := `
 		DELETE FROM users
-		WHERE uuid = ?
+		WHERE uuid = $1
 	`
 
-	_, err := r.db.Exec(query, id)
+	_, err := r.db.ExecContext(
+		ctx,
+		query,
+		uuid,
+	)
 
 	return err
 }

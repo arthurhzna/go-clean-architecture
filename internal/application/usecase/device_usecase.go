@@ -1,3 +1,5 @@
+// internal/application/usecase/device_usecase.go
+
 package usecase
 
 import (
@@ -6,7 +8,10 @@ import (
 	apprequest "github.com/arthurhzna/go-clean-architecture/internal/application/dto/request"
 	appresponse "github.com/arthurhzna/go-clean-architecture/internal/application/dto/response"
 
-	repositoryiface "github.com/arthurhzna/go-clean-architecture/internal/domain/interface/persistence/repository"
+	"github.com/arthurhzna/go-clean-architecture/internal/application/validation/builder"
+	"github.com/arthurhzna/go-clean-architecture/internal/application/validation/rule"
+
+	repositoryiface "github.com/arthurhzna/go-clean-architecture/internal/domain/repository"
 )
 
 type DeviceUseCase struct {
@@ -26,7 +31,19 @@ func (u *DeviceUseCase) FindByID(
 	req *apprequest.FindDeviceByIDRequest,
 ) (*appresponse.DeviceResponse, error) {
 
-	device, err := u.deviceRepo.FindByID(ctx, req.ID)
+	err := rule.Execute(
+		builder.FindDeviceByIDRules(*req),
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	device, err := u.deviceRepo.FindByID(
+		ctx,
+		req.ID,
+	)
+
 	if err != nil {
 		return nil, err
 	}

@@ -31,8 +31,9 @@ func NewJwtUtil(
 	}
 }
 
-func (h *JwtUtil) Sign(
+func (h *JwtUtil) Generate(
 	userID int64,
+	roleID int64,
 ) (string, error) {
 
 	currentTime := time.Now()
@@ -41,6 +42,7 @@ func (h *JwtUtil) Sign(
 		jwt.SigningMethodHS256,
 		jwtClaims{
 			UserID: userID,
+			RoleID: roleID,
 			RegisteredClaims: jwt.RegisteredClaims{
 				ID:       uuid.NewString(),
 				IssuedAt: jwt.NewNumericDate(currentTime),
@@ -59,7 +61,7 @@ func (h *JwtUtil) Sign(
 
 func (h *JwtUtil) Parse(
 	tokenString string,
-) (*jwtiface.JWTClaims, error) {
+) (*jwtiface.TokenClaims, error) {
 
 	parser := jwt.NewParser(
 		jwt.WithValidMethods(h.allowedAlgs),
@@ -84,7 +86,7 @@ func (h *JwtUtil) Parse(
 		return nil, errors.New("token not valid")
 	}
 
-	return &jwtiface.JWTClaims{
+	return &jwtiface.TokenClaims{
 		UserID: claims.UserID,
 	}, nil
 }

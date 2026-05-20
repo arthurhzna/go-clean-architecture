@@ -11,4 +11,6 @@ type UnitOfWork interface {
 	) error
 
 	DeviceRepository() DeviceRepository
+	UserRepository() UserRepository
+	RoleRepository() RoleRepository
 }

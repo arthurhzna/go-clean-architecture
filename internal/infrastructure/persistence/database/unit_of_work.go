@@ -65,3 +65,7 @@ func (u *unitOfWork) DeviceRepository() repositoryiface.DeviceRepository {
 func (u *unitOfWork) UserRepository() repositoryiface.UserRepository {
 	return repositories.NewUserRepository(u.db)
 }
+
+func (u *unitOfWork) RoleRepository() repositoryiface.RoleRepository {
+	return repositories.NewRoleRepository(u.db)
+}

@@ -3,63 +3,107 @@ package usecase
 import (
 	"context"
 
-	apprequest "github.com/arthurhzna/go-clean-architecture/internal/application/dto/request"
-	appresponse "github.com/arthurhzna/go-clean-architecture/internal/application/dto/response"
+	"github.com/arthurhzna/go-clean-architecture/internal/application/dto/request"
+	"github.com/arthurhzna/go-clean-architecture/internal/application/dto/response"
+
+	"github.com/arthurhzna/go-clean-architecture/internal/application/validation/builder"
+	"github.com/arthurhzna/go-clean-architecture/internal/application/validation/rule"
 
 	"github.com/arthurhzna/go-clean-architecture/internal/domain/entity"
 
-	persistenceiface "github.com/arthurhzna/go-clean-architecture/internal/domain/interface/persistence"
+	repositoryiface "github.com/arthurhzna/go-clean-architecture/internal/domain/repository"
+
+	securitydomain "github.com/arthurhzna/go-clean-architecture/internal/domain/security"
+
+	servicedomain "github.com/arthurhzna/go-clean-architecture/internal/domain/service"
+
+	errordomain "github.com/arthurhzna/go-clean-architecture/internal/domain/error"
 )
 
-type DeviceLogUseCase struct {
-	uow persistenceiface.UnitOfWork
+type UserUseCase struct {
+	uow repositoryiface.UnitOfWork
+
+	passwordHasher securitydomain.PasswordHasher
+	tokenService   securitydomain.TokenService
+	uuidGenerator  servicedomain.UUIDGenerator
 }
 
-func NewDeviceLogUseCase(
-	uow persistenceiface.UnitOfWork,
-) *DeviceLogUseCase {
-	return &DeviceLogUseCase{
-		uow: uow,
+func NewUserUseCase(
+	uow repositoryiface.UnitOfWork,
+	passwordHasher securitydomain.PasswordHasher,
+	tokenService securitydomain.TokenService,
+	uuidGenerator servicedomain.UUIDGenerator,
+) *UserUseCase {
+	return &UserUseCase{
+		uow:            uow,
+		passwordHasher: passwordHasher,
+		tokenService:   tokenService,
+		uuidGenerator:  uuidGenerator,
 	}
 }
 
-func (u *DeviceLogUseCase) CreateDeviceWithLog(
+func (u *UserUseCase) Register(
 	ctx context.Context,
-	req *apprequest.CreateDeviceWithLogRequest,
-) (*appresponse.CreateDeviceWithLogResponse, error) {
+	req request.RegisterUserRequest,
+) (*response.RegisterResponse, error) {
 
-	var res *appresponse.CreateDeviceWithLogResponse
+	err := rule.Execute(
+		builder.RegisterUserRules(req),
+	)
 
-	err := u.uow.WithTransaction(
+	if err != nil {
+		return nil, err
+	}
+
+	var registeredUser *entity.User
+
+	err = u.uow.WithTransaction(
 		ctx,
-		func(txUow persistenceiface.UnitOfWork) error {
+		func(txUow repositoryiface.UnitOfWork) error {
 
-			deviceRepo := txUow.DeviceRepository()
-			deviceLogRepo := txUow.DeviceLogRepository()
+			existingUser, err := txUow.
+				UserRepository().
+				FindByEmail(
+					ctx,
+					req.Email,
+				)
 
-			device := &entity.Device{
-				Name: req.Name,
-			}
-
-			err := deviceRepo.Create(ctx, device)
 			if err != nil {
 				return err
 			}
 
-			deviceLog := &entity.DeviceLog{
-				DeviceID: device.ID,
-				Action:   "CREATE_DEVICE",
+			if existingUser != nil {
+				return errordomain.ErrEmailAlreadyExist
 			}
 
-			err = deviceLogRepo.Create(ctx, deviceLog)
+			hashedPassword, err := u.passwordHasher.Hash(
+				req.Password,
+			)
+
 			if err != nil {
 				return err
 			}
 
-			res = &appresponse.CreateDeviceWithLogResponse{
-				ID:   device.ID,
-				Name: device.Name,
+			user := &entity.User{
+				UUID:     u.uuidGenerator.New(),
+				Name:     req.Name,
+				Email:    req.Email,
+				Password: hashedPassword,
+				RoleID:   req.RoleID,
 			}
+
+			err = txUow.
+				UserRepository().
+				Create(
+					ctx,
+					user,
+				)
+
+			if err != nil {
+				return err
+			}
+
+			registeredUser = user
 
 			return nil
 		},
@@ -69,5 +113,69 @@ func (u *DeviceLogUseCase) CreateDeviceWithLog(
 		return nil, err
 	}
 
-	return res, nil
+	return &response.RegisterResponse{
+		User: response.UserResponse{
+			UUID:   registeredUser.UUID,
+			Name:   registeredUser.Name,
+			Email:  registeredUser.Email,
+			RoleID: registeredUser.RoleID,
+		},
+	}, nil
+}
+
+func (u *UserUseCase) Login(
+	ctx context.Context,
+	req request.LoginUserRequest,
+) (*response.LoginResponse, error) {
+
+	errs := rule.Execute(
+		builder.LoginUserRules(req),
+	)
+
+	if len(errs) > 0 {
+		return nil, errs[0]
+	}
+
+	user, err := u.uow.
+		UserRepository().
+		FindByEmail(
+			ctx,
+			req.Email,
+		)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if user == nil {
+		return nil, errordomain.ErrInvalidCredential
+	}
+
+	isValid := u.passwordHasher.Check(
+		req.Password,
+		user.Password,
+	)
+
+	if !isValid {
+		return nil, errordomain.ErrInvalidCredential
+	}
+
+	token, err := u.tokenService.Generate(
+		user.ID,
+		user.RoleID,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &response.LoginResponse{
+		User: response.UserResponse{
+			UUID:   user.UUID,
+			Name:   user.Name,
+			Email:  user.Email,
+			RoleID: user.RoleID,
+		},
+		Token: token,
+	}, nil
 }
