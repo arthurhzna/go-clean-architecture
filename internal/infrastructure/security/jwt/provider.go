@@ -88,5 +88,6 @@ func (h *JwtUtil) Parse(
 
 	return &jwtiface.TokenClaims{
 		UserID: claims.UserID,
+		RoleID: claims.RoleID,
 	}, nil
 }

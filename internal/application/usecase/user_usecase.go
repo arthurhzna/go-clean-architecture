@@ -128,12 +128,12 @@ func (u *UserUseCase) Login(
 	req request.LoginUserRequest,
 ) (*response.LoginResponse, error) {
 
-	errs := rule.Execute(
+	err := rule.Execute(
 		builder.LoginUserRules(req),
 	)
 
-	if len(errs) > 0 {
-		return nil, errs[0]
+	if err != nil {
+		return nil, err
 	}
 
 	user, err := u.uow.
