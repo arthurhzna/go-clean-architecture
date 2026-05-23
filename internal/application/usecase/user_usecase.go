@@ -8,7 +8,7 @@ import (
 
 	"github.com/arthurhzna/go-clean-architecture/internal/domain/entity"
 
-	repositoryiface "github.com/arthurhzna/go-clean-architecture/internal/domain/repository"
+	repositoryinterface "github.com/arthurhzna/go-clean-architecture/internal/domain/repository"
 
 	securitydomain "github.com/arthurhzna/go-clean-architecture/internal/domain/security"
 
@@ -18,7 +18,7 @@ import (
 )
 
 type UserUseCase struct {
-	uow repositoryiface.UnitOfWork
+	uow repositoryinterface.UnitOfWork
 
 	passwordHasher securitydomain.PasswordHasher
 	tokenService   securitydomain.TokenService
@@ -26,7 +26,7 @@ type UserUseCase struct {
 }
 
 func NewUserUseCase(
-	uow repositoryiface.UnitOfWork,
+	uow repositoryinterface.UnitOfWork,
 	passwordHasher securitydomain.PasswordHasher,
 	tokenService securitydomain.TokenService,
 	uuidGenerator servicedomain.UUIDGenerator,
@@ -48,7 +48,7 @@ func (u *UserUseCase) Register(
 
 	err := u.uow.WithTransaction(
 		ctx,
-		func(txUow repositoryiface.UnitOfWork) error {
+		func(txUow repositoryinterface.UnitOfWork) error {
 
 			existingUser, err := txUow.
 				UserRepository().
@@ -129,7 +129,7 @@ func (u *UserUseCase) Login(
 	}
 
 	if user == nil {
-		return nil, errordomain.ErrInvalidCredential
+		return nil, errordomain.ErrEmailNotFound
 	}
 
 	isValid := u.passwordHasher.Check(

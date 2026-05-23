@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/arthurhzna/go-clean-architecture/internal/presentation/response/dto"
-	responseerror "github.com/arthurhzna/go-clean-architecture/internal/presentation/response/error"
 	"github.com/arthurhzna/go-clean-architecture/internal/presentation/response/error/constant"
+	"github.com/arthurhzna/go-clean-architecture/internal/presentation/response/httperror"
 	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -33,10 +33,11 @@ func ErrorHandler() gin.HandlerFunc {
 				handleJsonUnmarshalTypeError(ctx, e)
 			case *time.ParseError:
 				handleParseTimeError(ctx, e)
-			case *responseerror.ResponseError:
+			case *httperror.ResponseError:
 				ctx.AbortWithStatusJSON(e.GetCode(), dto.WebResponse[any]{
 					Message: e.DisplayMessage(),
 				})
+			// todo custom validate
 			default:
 				if errors.Is(e, io.EOF) {
 					ctx.AbortWithStatusJSON(http.StatusBadRequest, dto.WebResponse[any]{

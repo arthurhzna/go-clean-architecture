@@ -9,4 +9,6 @@ const (
 	RequestTimeoutErrorMessage     = "failed to process request in time, please try again"
 	ValidationErrorMessage         = "input validation error"
 	NotFoundErrorMessage           = "%s not found"
+	ConflictErrorMessage           = "%s already exists"
+	BadRequestErrorMessage         = "%s is invalid"
 )

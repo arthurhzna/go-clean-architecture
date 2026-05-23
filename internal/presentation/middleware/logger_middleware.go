@@ -7,11 +7,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 
-	"github.com/arthurhzna/go-clean-architecture/internal/domain/logging"
-	responseerror "github.com/arthurhzna/go-clean-architecture/internal/presentation/response/error"
+	"github.com/arthurhzna/go-clean-architecture/internal/domain/logger"
+	"github.com/arthurhzna/go-clean-architecture/internal/presentation/response/httperror"
 )
 
-func Logger(logger logging.Logger) gin.HandlerFunc {
+func Logger(logger logger.Logger) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		start := time.Now()
 		path := ctx.Request.URL.Path
@@ -33,15 +33,15 @@ func Logger(logger logging.Logger) gin.HandlerFunc {
 	}
 }
 
-// todo costume validate
-func logErrors(ctx *gin.Context, params map[string]any, logger logging.Logger) {
+// todo custom validate
+func logErrors(ctx *gin.Context, params map[string]any, logger logger.Logger) {
 	errors := []error{}
 	for _, err := range ctx.Errors {
 		switch e := err.Err.(type) {
 		case validator.ValidationErrors:
 			params["status_code"] = http.StatusBadRequest
 			errors = append(errors, err)
-		case *responseerror.ResponseError:
+		case *httperror.ResponseError:
 			params["status_code"] = e.GetCode()
 			errors = append(errors, e.OriginalError())
 		default:

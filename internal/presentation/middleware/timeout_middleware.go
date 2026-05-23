@@ -4,9 +4,8 @@ import (
 	"context"
 	"time"
 
+	"github.com/arthurhzna/go-clean-architecture/internal/presentation/response/httperror"
 	"github.com/gin-gonic/gin"
-
-	responseerror "github.com/arthurhzna/go-clean-architecture/internal/presentation/response/error"
 )
 
 func RequestTimeout(time_period int) gin.HandlerFunc {
@@ -24,7 +23,7 @@ func RequestTimeout(time_period int) gin.HandlerFunc {
 
 		select {
 		case <-timeoutCtx.Done():
-			ctx.Error(responseerror.NewTimeoutError())
+			ctx.Error(httperror.NewTimeoutError())
 			ctx.Abort()
 		case <-done:
 		}
