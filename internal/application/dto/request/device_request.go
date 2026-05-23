@@ -1,5 +1,5 @@
 package request
 
 type FindDeviceByIDRequest struct {
-	ID int64
+	DeviceID int64 `json:"device_id"`
 }

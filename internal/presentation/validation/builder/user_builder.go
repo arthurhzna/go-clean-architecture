@@ -2,11 +2,9 @@ package builder
 
 import (
 	"github.com/arthurhzna/go-clean-architecture/internal/application/dto/request"
-
-	"github.com/arthurhzna/go-clean-architecture/internal/application/validation/field"
-	"github.com/arthurhzna/go-clean-architecture/internal/application/validation/rule"
-
 	"github.com/arthurhzna/go-clean-architecture/internal/domain/policy"
+	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation/field"
+	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation/rule"
 )
 
 func RegisterUserRules(

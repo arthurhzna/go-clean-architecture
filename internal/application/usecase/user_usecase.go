@@ -6,9 +6,6 @@ import (
 	"github.com/arthurhzna/go-clean-architecture/internal/application/dto/request"
 	"github.com/arthurhzna/go-clean-architecture/internal/application/dto/response"
 
-	"github.com/arthurhzna/go-clean-architecture/internal/application/validation/builder"
-	"github.com/arthurhzna/go-clean-architecture/internal/application/validation/rule"
-
 	"github.com/arthurhzna/go-clean-architecture/internal/domain/entity"
 
 	repositoryiface "github.com/arthurhzna/go-clean-architecture/internal/domain/repository"
@@ -47,17 +44,9 @@ func (u *UserUseCase) Register(
 	req request.RegisterUserRequest,
 ) (*response.RegisterResponse, error) {
 
-	err := rule.Execute(
-		builder.RegisterUserRules(req),
-	)
-
-	if err != nil {
-		return nil, err
-	}
-
 	var registeredUser *entity.User
 
-	err = u.uow.WithTransaction(
+	err := u.uow.WithTransaction(
 		ctx,
 		func(txUow repositoryiface.UnitOfWork) error {
 
@@ -127,14 +116,6 @@ func (u *UserUseCase) Login(
 	ctx context.Context,
 	req request.LoginUserRequest,
 ) (*response.LoginResponse, error) {
-
-	err := rule.Execute(
-		builder.LoginUserRules(req),
-	)
-
-	if err != nil {
-		return nil, err
-	}
 
 	user, err := u.uow.
 		UserRepository().
