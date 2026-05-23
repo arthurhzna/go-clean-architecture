@@ -4,13 +4,14 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/JordanMarcelino/widatech-technical/internal/pkg/httperror"
-	"github.com/JordanMarcelino/widatech-technical/internal/pkg/logger"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+
+	"github.com/arthurhzna/go-clean-architecture/internal/domain/logging"
+	responseerror "github.com/arthurhzna/go-clean-architecture/internal/presentation/response/error"
 )
 
-func Logger() gin.HandlerFunc {
+func Logger(logger logging.Logger) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		start := time.Now()
 		path := ctx.Request.URL.Path
@@ -25,21 +26,22 @@ func Logger() gin.HandlerFunc {
 		}
 
 		if len(ctx.Errors) == 0 {
-			logger.Log.WithFields(params).Info("incoming request")
+			logger.WithFields(params).Info("incoming request")
 			return
 		}
-		logErrors(ctx, params)
+		logErrors(ctx, params, logger)
 	}
 }
 
-func logErrors(ctx *gin.Context, params map[string]any) {
+// todo costume validate
+func logErrors(ctx *gin.Context, params map[string]any, logger logging.Logger) {
 	errors := []error{}
 	for _, err := range ctx.Errors {
 		switch e := err.Err.(type) {
 		case validator.ValidationErrors:
 			params["status_code"] = http.StatusBadRequest
 			errors = append(errors, err)
-		case *httperror.ResponseError:
+		case *responseerror.ResponseError:
 			params["status_code"] = e.GetCode()
 			errors = append(errors, e.OriginalError())
 		default:
@@ -49,5 +51,5 @@ func logErrors(ctx *gin.Context, params map[string]any) {
 	}
 
 	params["errors"] = errors
-	logger.Log.WithFields(params).Error("got error")
+	logger.WithFields(params).Error("got error")
 }
