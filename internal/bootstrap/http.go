@@ -10,6 +10,7 @@ import (
 	"github.com/arthurhzna/go-clean-architecture/internal/domain/logger"
 
 	"github.com/arthurhzna/go-clean-architecture/internal/config"
+	"github.com/arthurhzna/go-clean-architecture/internal/presentation/controller"
 	"github.com/arthurhzna/go-clean-architecture/internal/presentation/middleware"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/gzip"
@@ -22,7 +23,7 @@ type HttpServer struct {
 	logger logger.Logger
 }
 
-func NewHTTPServer(cfg *config.Config, logger *logger.Logger) *HttpServer {
+func NewHTTPServer(cfg *config.Config, logger logger.Logger) *HttpServer {
 	appCfg := cfg.App
 	httpCfg := cfg.HttpServer
 	gin.SetMode(appCfg.Environment)
@@ -61,7 +62,7 @@ func (s *HttpServer) Shutdown() {
 	s.logger.Info("HTTP server shut down gracefully")
 }
 
-func RegisterMiddleware(router *gin.Engine, cfg *config.HttpServerConfig, logger *logger.Logger) {
+func RegisterMiddleware(router *gin.Engine, cfg *config.HttpServerConfig, logger logger.Logger) {
 	middlewares := []gin.HandlerFunc{
 		gzip.Gzip(gzip.BestSpeed),
 		middleware.Logger(logger),
@@ -77,4 +78,16 @@ func RegisterMiddleware(router *gin.Engine, cfg *config.HttpServerConfig, logger
 	}
 
 	router.Use(middlewares...)
+}
+
+func RegisterRoutes(
+	router *gin.Engine,
+	appController *controller.AppController,
+) {
+	router.NoRoute(appController.RouteNotFound)
+	router.NoMethod(appController.MethodNotAllowed)
+
+	api := router.Group("/apiv1")
+
+	api.GET("/health", appController.Health)
 }

@@ -1,4 +1,4 @@
-package httperror
+package response
 
 import (
 	errordomain "github.com/arthurhzna/go-clean-architecture/internal/domain/error"

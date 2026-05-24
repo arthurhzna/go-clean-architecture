@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	loggingiface "github.com/arthurhzna/go-clean-architecture/internal/domain/logging"
+	loggerinterface "github.com/arthurhzna/go-clean-architecture/internal/domain/logger"
 	"github.com/rs/zerolog"
 )
 
@@ -116,7 +116,7 @@ func (l *ZeroLogger) Debugf(
 		Msgf(format, args...)
 }
 
-func (l *ZeroLogger) WithField(key string, value any) loggingiface.Logger {
+func (l *ZeroLogger) WithField(key string, value any) loggerinterface.Logger {
 	var log zerolog.Logger
 	if err, ok := value.(error); ok {
 		log = l.log.With().Err(err).Logger()
@@ -129,7 +129,7 @@ func (l *ZeroLogger) WithField(key string, value any) loggingiface.Logger {
 	}
 }
 
-func (l *ZeroLogger) WithFields(fields map[string]any) loggingiface.Logger {
+func (l *ZeroLogger) WithFields(fields map[string]any) loggerinterface.Logger {
 	logCtx := l.log.With()
 	for k, v := range fields {
 		if errs, ok := v.([]error); ok {

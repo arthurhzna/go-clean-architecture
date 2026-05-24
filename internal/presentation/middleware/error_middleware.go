@@ -13,7 +13,6 @@ import (
 	"github.com/arthurhzna/go-clean-architecture/internal/presentation/response/httperror"
 	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation/utils"
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 )
 
 func ErrorHandler() gin.HandlerFunc {
@@ -25,7 +24,7 @@ func ErrorHandler() gin.HandlerFunc {
 			err := ctx.Errors.Last()
 
 			switch e := err.Err.(type) {
-			case validator.ValidationErrors:
+			case *validation.Errors:
 				handleValidationError(ctx, e)
 			case *json.SyntaxError:
 				handleJsonSyntaxError(ctx)
@@ -72,10 +71,10 @@ func handleParseTimeError(ctx *gin.Context, err *time.ParseError) {
 	})
 }
 
-func handleValidationError(ctx *gin.Context, err validator.ValidationErrors) {
+func handleValidationError(ctx *gin.Context, err *validation.Errors) {
 	ve := []dto.FieldError{}
 
-	for _, fe := range err {
+	for _, fe := range *err {
 		ve = append(ve, dto.FieldError{
 			Field:   fe.Field(),
 			Message: utils.TagToMsg(fe),

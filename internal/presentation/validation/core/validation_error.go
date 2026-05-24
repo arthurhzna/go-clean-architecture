@@ -1,4 +1,4 @@
-package validation
+package core
 
 type ValidationError struct {
 	field string

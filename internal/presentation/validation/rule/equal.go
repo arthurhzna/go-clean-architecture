@@ -1,8 +1,6 @@
 package rule
 
-import (
-	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation"
-)
+import "github.com/arthurhzna/go-clean-architecture/internal/presentation/validation"
 
 func Equal(
 	field string,

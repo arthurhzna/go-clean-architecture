@@ -1,17 +1,18 @@
-package builder
+package validation
 
 import (
 	"github.com/arthurhzna/go-clean-architecture/internal/application/dto/request"
 	"github.com/arthurhzna/go-clean-architecture/internal/domain/policy"
+	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation/core"
 	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation/field"
 	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation/rule"
 )
 
 func RegisterUserRules(
-	req request.RegisterUserRequest,
-) []rule.Rule {
+	req *request.RegisterUserRequest,
+) []core.Rule {
 
-	return []rule.Rule{
+	return []core.Rule{
 
 		rule.RequiredString(
 			field.UserNameField,
@@ -64,10 +65,10 @@ func RegisterUserRules(
 }
 
 func LoginUserRules(
-	req request.LoginUserRequest,
-) []rule.Rule {
+	req *request.LoginUserRequest,
+) []core.Rule {
 
-	return []rule.Rule{
+	return []core.Rule{
 
 		rule.RequiredString(
 			field.UserEmailField,

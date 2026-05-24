@@ -3,21 +3,23 @@ package usecase
 import (
 	"context"
 
+	"github.com/arthurhzna/go-clean-architecture/internal/domain/usecase"
+
 	apprequest "github.com/arthurhzna/go-clean-architecture/internal/application/dto/request"
 	appresponse "github.com/arthurhzna/go-clean-architecture/internal/application/dto/response"
 
 	errordomain "github.com/arthurhzna/go-clean-architecture/internal/domain/error"
 
-	repositoryiface "github.com/arthurhzna/go-clean-architecture/internal/domain/repository"
+	repositoryinterface "github.com/arthurhzna/go-clean-architecture/internal/domain/repository"
 )
 
 type DeviceUseCase struct {
-	deviceRepo repositoryiface.DeviceRepository
+	deviceRepo repositoryinterface.DeviceRepository
 }
 
 func NewDeviceUseCase(
-	deviceRepo repositoryiface.DeviceRepository,
-) *DeviceUseCase {
+	deviceRepo repositoryinterface.DeviceRepository,
+) usecase.DeviceUseCase {
 	return &DeviceUseCase{
 		deviceRepo: deviceRepo,
 	}

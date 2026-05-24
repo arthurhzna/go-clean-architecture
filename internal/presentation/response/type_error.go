@@ -1,11 +1,11 @@
-package httperror
+package response
 
 import (
 	"errors"
 	"fmt"
 	"net/http"
 
-	"github.com/arthurhzna/go-clean-architecture/internal/presentation/response/httperror/constant"
+	"github.com/arthurhzna/go-clean-architecture/internal/presentation/response/constant"
 )
 
 func newConflictError(err error) *ResponseError {

@@ -3,21 +3,22 @@ package rule
 import (
 	"strings"
 
-	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation"
+	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation/core"
+	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation/utils"
 )
 
 func RequiredString(
 	field string,
 	value string,
-) Rule {
+) core.Rule {
 
-	return func() validation.FieldError {
+	return func() core.FieldError {
 
 		if strings.TrimSpace(value) == "" {
 
-			return validation.NewValidationError(
+			return core.NewValidationError(
 				field,
-				TagRequired,
+				utils.TagRequired,
 			)
 		}
 
@@ -28,14 +29,14 @@ func RequiredString(
 func RequiredInt64(
 	field string,
 	value int64,
-) Rule {
-	return func() validation.FieldError {
+) core.Rule {
+	return func() core.FieldError {
 
 		if value == 0 {
 
-			return validation.NewValidationError(
+			return core.NewValidationError(
 				field,
-				TagRequired,
+				utils.TagRequired,
 			)
 		}
 

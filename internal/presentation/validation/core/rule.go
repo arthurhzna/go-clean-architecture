@@ -1,14 +1,12 @@
-package rule
+package core
 
-import "github.com/arthurhzna/go-clean-architecture/internal/presentation/validation"
-
-type Rule func() validation.FieldError
+type Rule func() FieldError
 
 func Execute(
 	rules []Rule,
 ) error {
 
-	var errs validation.Errors
+	var errs Errors
 
 	for _, rule := range rules {
 

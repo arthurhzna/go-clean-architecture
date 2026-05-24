@@ -4,7 +4,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation"
+	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation/core"
 )
 
 var emailRegex = regexp.MustCompile(
@@ -14,9 +14,9 @@ var emailRegex = regexp.MustCompile(
 func Email(
 	field string,
 	value string,
-) Rule {
+) core.Rule {
 
-	return func() validation.FieldError {
+	return func() core.FieldError {
 
 		if strings.TrimSpace(value) == "" {
 			return nil
@@ -24,7 +24,7 @@ func Email(
 
 		if !emailRegex.MatchString(value) {
 
-			return validation.NewValidationError(
+			return core.NewValidationError(
 				field,
 				"email",
 			)

@@ -3,16 +3,17 @@ package rule
 import (
 	"time"
 
-	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation"
+	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation/core"
+	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation/utils"
 )
 
 func TimeFormat(
 	field string,
 	value string,
 	layout string,
-) Rule {
+) core.Rule {
 
-	return func() validation.FieldError {
+	return func() core.FieldError {
 
 		if value == "" {
 			return nil
@@ -22,9 +23,9 @@ func TimeFormat(
 
 		if err != nil {
 
-			return validation.NewValidationError(
+			return core.NewValidationError(
 				field,
-				TagTimeFormat,
+				utils.TagTimeFormat,
 			)
 		}
 

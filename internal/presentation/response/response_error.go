@@ -1,4 +1,4 @@
-package httperror
+package response
 
 import "errors"
 

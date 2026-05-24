@@ -8,6 +8,8 @@ import (
 
 	"github.com/arthurhzna/go-clean-architecture/internal/domain/entity"
 
+	"github.com/arthurhzna/go-clean-architecture/internal/domain/usecase"
+
 	repositoryinterface "github.com/arthurhzna/go-clean-architecture/internal/domain/repository"
 
 	securitydomain "github.com/arthurhzna/go-clean-architecture/internal/domain/security"
@@ -30,7 +32,7 @@ func NewUserUseCase(
 	passwordHasher securitydomain.PasswordHasher,
 	tokenService securitydomain.TokenService,
 	uuidGenerator servicedomain.UUIDGenerator,
-) *UserUseCase {
+) usecase.UserUseCase {
 	return &UserUseCase{
 		uow:            uow,
 		passwordHasher: passwordHasher,
@@ -41,7 +43,7 @@ func NewUserUseCase(
 
 func (u *UserUseCase) Register(
 	ctx context.Context,
-	req request.RegisterUserRequest,
+	req *request.RegisterUserRequest,
 ) (*response.RegisterResponse, error) {
 
 	var registeredUser *entity.User
@@ -114,7 +116,7 @@ func (u *UserUseCase) Register(
 
 func (u *UserUseCase) Login(
 	ctx context.Context,
-	req request.LoginUserRequest,
+	req *request.LoginUserRequest,
 ) (*response.LoginResponse, error) {
 
 	user, err := u.uow.
