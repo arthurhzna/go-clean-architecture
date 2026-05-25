@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/arthurhzna/go-clean-architecture/internal/application/dto/request"
-	"github.com/arthurhzna/go-clean-architecture/internal/application/usecase"
+	"github.com/arthurhzna/go-clean-architecture/internal/domain/usecase"
 
 	"github.com/arthurhzna/go-clean-architecture/internal/presentation/response"
 	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation"
@@ -39,7 +39,7 @@ func (c *UserController) Register(ctx *gin.Context) {
 	}
 
 	res, err := c.userUseCase.Register(
-		ctx.Request.Context(),
+		ctx.Request.Context(), //ctx aja
 		req,
 	)
 

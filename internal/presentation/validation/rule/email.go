@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation/core"
+	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation/utils"
 )
 
 var emailRegex = regexp.MustCompile(
@@ -26,7 +27,8 @@ func Email(
 
 			return core.NewValidationError(
 				field,
-				"email",
+				utils.TagEmail,
+				"",
 			)
 		}
 

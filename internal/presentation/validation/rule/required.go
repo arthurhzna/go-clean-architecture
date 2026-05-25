@@ -1,10 +1,11 @@
 package rule
 
 import (
+	"strconv"
 	"strings"
 
+	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation/constant"
 	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation/core"
-	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation/utils"
 )
 
 func RequiredString(
@@ -18,7 +19,8 @@ func RequiredString(
 
 			return core.NewValidationError(
 				field,
-				utils.TagRequired,
+				constant.TagRequired,
+				value,
 			)
 		}
 
@@ -36,7 +38,8 @@ func RequiredInt64(
 
 			return core.NewValidationError(
 				field,
-				utils.TagRequired,
+				constant.TagRequired,
+				strconv.FormatInt(value, 10),
 			)
 		}
 

@@ -1,4 +1,4 @@
-package field
+package constant
 
 const (
 	UserNameField            string = "name"

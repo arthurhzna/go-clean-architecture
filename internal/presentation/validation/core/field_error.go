@@ -5,4 +5,5 @@ type FieldError interface {
 
 	Field() string
 	Tag() string
+	Param() string
 }

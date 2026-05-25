@@ -3,8 +3,8 @@ package rule
 import (
 	"time"
 
+	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation/constant"
 	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation/core"
-	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation/utils"
 )
 
 func TimeFormat(
@@ -25,7 +25,8 @@ func TimeFormat(
 
 			return core.NewValidationError(
 				field,
-				utils.TagTimeFormat,
+				constant.TagTimeFormat,
+				"",
 			)
 		}
 

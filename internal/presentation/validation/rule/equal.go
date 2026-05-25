@@ -1,20 +1,24 @@
 package rule
 
-import "github.com/arthurhzna/go-clean-architecture/internal/presentation/validation"
+import (
+	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation/constant"
+	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation/core"
+)
 
 func Equal(
 	field string,
 	value string,
 	compare string,
-) Rule {
+) core.Rule {
 
-	return func() validation.FieldError {
+	return func() core.FieldError {
 
 		if value != compare {
 
-			return validation.NewValidationError(
+			return core.NewValidationError(
 				field,
-				"equal",
+				constant.TagEqual,
+				"",
 			)
 		}
 

@@ -3,8 +3,8 @@ package validation
 import (
 	"github.com/arthurhzna/go-clean-architecture/internal/application/dto/request"
 	"github.com/arthurhzna/go-clean-architecture/internal/domain/policy"
+	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation/constant"
 	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation/core"
-	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation/field"
 	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation/rule"
 )
 
@@ -15,50 +15,50 @@ func RegisterUserRules(
 	return []core.Rule{
 
 		rule.RequiredString(
-			field.UserNameField,
+			constant.UserNameField,
 			req.Name,
 		),
 
 		rule.MinLength(
-			field.UserNameField,
+			constant.UserNameField,
 			req.Name,
 			policy.MinNameLength,
 		),
 
 		rule.RequiredString(
-			field.UserEmailField,
+			constant.UserEmailField,
 			req.Email,
 		),
 
 		rule.Email(
-			field.UserEmailField,
+			constant.UserEmailField,
 			req.Email,
 		),
 
 		rule.RequiredString(
-			field.UserPasswordField,
+			constant.UserPasswordField,
 			req.Password,
 		),
 
 		rule.MinLength(
-			field.UserPasswordField,
+			constant.UserPasswordField,
 			req.Password,
 			policy.MinPasswordLength,
 		),
 
 		rule.RequiredString(
-			field.UserConfirmPasswordField,
+			constant.UserConfirmPasswordField,
 			req.ConfirmPassword,
 		),
 
 		rule.Equal(
-			field.UserConfirmPasswordField,
+			constant.UserConfirmPasswordField,
 			req.ConfirmPassword,
 			req.Password,
 		),
 
 		rule.RequiredInt64(
-			field.UserRoleField,
+			constant.UserRoleField,
 			req.RoleID,
 		),
 	}
@@ -71,17 +71,17 @@ func LoginUserRules(
 	return []core.Rule{
 
 		rule.RequiredString(
-			field.UserEmailField,
+			constant.UserEmailField,
 			req.Email,
 		),
 
 		rule.Email(
-			field.UserEmailField,
+			constant.UserEmailField,
 			req.Email,
 		),
 
 		rule.RequiredString(
-			field.UserPasswordField,
+			constant.UserPasswordField,
 			req.Password,
 		),
 	}

@@ -23,9 +23,10 @@ func NewDeviceController(
 }
 
 func (c *DeviceController) FindByID(ctx *gin.Context) {
-	var req request.FindDeviceByIDRequest
 
-	if err := ctx.ShouldBindJSON(&req); err != nil {
+	req := new(request.FindDeviceByIDRequest)
+
+	if err := ctx.ShouldBindJSON(req); err != nil {
 		ctx.Error(err)
 		return
 	}

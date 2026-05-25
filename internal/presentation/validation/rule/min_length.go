@@ -1,6 +1,9 @@
 package rule
 
 import (
+	"strconv"
+
+	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation/constant"
 	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation/core"
 )
 
@@ -16,7 +19,8 @@ func MinLength(
 
 			return core.NewValidationError(
 				field,
-				"min_length",
+				constant.TagMinLength,
+				strconv.Itoa(min),
 			)
 		}
 

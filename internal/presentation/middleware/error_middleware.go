@@ -8,9 +8,10 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/arthurhzna/go-clean-architecture/internal/presentation/response"
+	"github.com/arthurhzna/go-clean-architecture/internal/presentation/response/constant"
 	"github.com/arthurhzna/go-clean-architecture/internal/presentation/response/dto"
-	"github.com/arthurhzna/go-clean-architecture/internal/presentation/response/error/constant"
-	"github.com/arthurhzna/go-clean-architecture/internal/presentation/response/httperror"
+	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation"
 	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation/utils"
 	"github.com/gin-gonic/gin"
 )
@@ -32,7 +33,7 @@ func ErrorHandler() gin.HandlerFunc {
 				handleJsonUnmarshalTypeError(ctx, e)
 			case *time.ParseError:
 				handleParseTimeError(ctx, e)
-			case *httperror.ResponseError:
+			case *response.ResponseError:
 				ctx.AbortWithStatusJSON(e.GetCode(), dto.WebResponse[any]{
 					Message: e.DisplayMessage(),
 				})
