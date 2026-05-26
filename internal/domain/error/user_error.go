@@ -4,12 +4,12 @@ import "errors"
 
 var (
 	ErrEmailAlreadyExist = errors.New(
-		"email already exists",
+		"email",
 	)
 	ErrUserNotFound = errors.New(
-		"user not found",
+		"user",
 	)
 	ErrEmailNotFound = errors.New(
-		"email not found",
+		"email",
 	)
 )
