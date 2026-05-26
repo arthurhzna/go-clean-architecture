@@ -7,15 +7,18 @@ import (
 func MapError(err error) error {
 	switch err {
 	case errordomain.ErrEmailAlreadyExist:
-		return newConflictError(err)
+		return NewConflictError(err)
 
 	case errordomain.ErrInvalidCredential:
-		return newUnauthorizedError(err)
+		return NewUnauthorizedError(err)
+
+	case errordomain.ErrInvalidRole:
+		return NewBadRequestError(err)
 
 	case errordomain.ErrUserNotFound,
 		errordomain.ErrEmailNotFound,
 		errordomain.ErrDeviceNotFound:
-		return newNotFoundError(err)
+		return NewNotFoundError(err)
 	}
 
 	return err

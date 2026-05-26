@@ -8,20 +8,53 @@ import (
 	"github.com/arthurhzna/go-clean-architecture/internal/presentation/response/constant"
 )
 
-func newConflictError(err error) *ResponseError {
-	return NewResponseError(err, http.StatusConflict, fmt.Sprintf(constant.ConflictErrorMessage, err.Error()))
+func NewConflictError(err error) *ResponseError {
+	return NewResponseError(
+		err,
+		http.StatusConflict,
+		fmt.Sprintf(
+			constant.ConflictErrorMessage,
+			err.Error(),
+		),
+	)
 }
 
-func newUnauthorizedError(err error) *ResponseError {
-	return NewResponseError(err, http.StatusUnauthorized, constant.UnauthorizedErrorMessage)
+func NewUnauthorizedError(err error) *ResponseError {
+	return NewResponseError(
+		err,
+		http.StatusUnauthorized,
+		constant.UnauthorizedErrorMessage,
+	)
 }
 
-func newNotFoundError(err error) *ResponseError {
-	return NewResponseError(err, http.StatusNotFound, fmt.Sprintf(constant.NotFoundErrorMessage, err.Error()))
+func NewNotFoundError(err error) *ResponseError {
+	return NewResponseError(
+		err,
+		http.StatusNotFound,
+		fmt.Sprintf(
+			constant.NotFoundErrorMessage,
+			err.Error(),
+		),
+	)
 }
 
-func newInternalServerError(err error) *ResponseError {
-	return NewResponseError(err, http.StatusInternalServerError, constant.InternalServerErrorMessage)
+func NewInternalServerError(err error) *ResponseError {
+	return NewResponseError(
+		err,
+		http.StatusInternalServerError,
+		constant.InternalServerErrorMessage,
+	)
+}
+
+func NewBadRequestError(err error) *ResponseError {
+	return NewResponseError(
+		err,
+		http.StatusBadRequest,
+		fmt.Sprintf(
+			constant.BadRequestErrorMessage,
+			err.Error(),
+		),
+	)
 }
 
 func NewTimeoutError() *ResponseError {
@@ -29,5 +62,15 @@ func NewTimeoutError() *ResponseError {
 		errors.New(constant.RequestTimeoutErrorMessage),
 		http.StatusRequestTimeout,
 		constant.RequestTimeoutErrorMessage,
+	)
+}
+
+func NewForbiddenError(err error) *ResponseError {
+	return NewResponseError(
+		err,
+		http.StatusForbidden,
+		fmt.Sprintf(
+			constant.ForbiddenErrorMessage,
+		),
 	)
 }

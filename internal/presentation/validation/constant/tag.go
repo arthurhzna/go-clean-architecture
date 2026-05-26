@@ -6,4 +6,5 @@ const (
 	TagMinLength  = "min_length"
 	TagEqual      = "equal"
 	TagTimeFormat = "time_format"
+	TagOneOf      = "one_of"
 )

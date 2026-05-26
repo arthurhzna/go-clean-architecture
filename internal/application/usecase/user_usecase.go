@@ -17,6 +17,8 @@ import (
 	servicedomain "github.com/arthurhzna/go-clean-architecture/internal/domain/service"
 
 	errordomain "github.com/arthurhzna/go-clean-architecture/internal/domain/error"
+
+	enumdomain "github.com/arthurhzna/go-clean-architecture/internal/domain/enum"
 )
 
 type UserUseCase struct {
@@ -45,6 +47,11 @@ func (u *UserUseCase) Register(
 	ctx context.Context,
 	req *request.RegisterUserRequest,
 ) (*response.RegisterResponse, error) {
+
+	roleID, ok := enumdomain.RoleNameToID[req.Role]
+	if !ok {
+		return nil, errordomain.ErrInvalidRole
+	}
 
 	var registeredUser *entity.User
 
@@ -80,7 +87,7 @@ func (u *UserUseCase) Register(
 				Name:     req.Name,
 				Email:    req.Email,
 				Password: hashedPassword,
-				RoleID:   req.RoleID,
+				RoleID:   roleID,
 			}
 
 			err = txUow.
@@ -106,10 +113,10 @@ func (u *UserUseCase) Register(
 
 	return &response.RegisterResponse{
 		User: response.UserResponse{
-			UUID:   registeredUser.UUID,
-			Name:   registeredUser.Name,
-			Email:  registeredUser.Email,
-			RoleID: registeredUser.RoleID,
+			UUID:  registeredUser.UUID,
+			Name:  registeredUser.Name,
+			Email: registeredUser.Email,
+			Role:  enumdomain.RoleIDToName[registeredUser.RoleID],
 		},
 	}, nil
 }
@@ -154,10 +161,10 @@ func (u *UserUseCase) Login(
 
 	return &response.LoginResponse{
 		User: response.UserResponse{
-			UUID:   user.UUID,
-			Name:   user.Name,
-			Email:  user.Email,
-			RoleID: user.RoleID,
+			UUID:  user.UUID,
+			Name:  user.Name,
+			Email: user.Email,
+			Role:  enumdomain.RoleIDToName[user.RoleID],
 		},
 		Token: token,
 	}, nil

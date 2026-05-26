@@ -2,6 +2,7 @@ package validation
 
 import (
 	"github.com/arthurhzna/go-clean-architecture/internal/application/dto/request"
+	"github.com/arthurhzna/go-clean-architecture/internal/domain/enum"
 	"github.com/arthurhzna/go-clean-architecture/internal/domain/policy"
 	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation/constant"
 	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation/core"
@@ -57,9 +58,15 @@ func RegisterUserRules(
 			req.Password,
 		),
 
-		rule.RequiredInt64(
+		rule.RequiredString(
 			constant.UserRoleField,
-			req.RoleID,
+			req.Role,
+		),
+
+		rule.OneOf(
+			constant.UserRoleField,
+			req.Role,
+			[]string{enum.RoleAdmin, enum.RoleCustomer},
 		),
 	}
 }

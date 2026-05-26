@@ -7,6 +7,7 @@ const (
 	JsonUnmarshallTypeErrorMessage = "invalid value for %s"
 	UnauthorizedErrorMessage       = "unauthorized"
 	RequestTimeoutErrorMessage     = "failed to process request in time, please try again"
+	ForbiddenErrorMessage          = "you are not allowed to access this resource"
 	ValidationErrorMessage         = "input validation error"
 	NotFoundErrorMessage           = "%s not found"
 	ConflictErrorMessage           = "%s already exists"

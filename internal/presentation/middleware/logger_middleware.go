@@ -8,7 +8,7 @@ import (
 	"github.com/go-playground/validator/v10"
 
 	"github.com/arthurhzna/go-clean-architecture/internal/domain/logger"
-	"github.com/arthurhzna/go-clean-architecture/internal/presentation/response/httperror"
+	"github.com/arthurhzna/go-clean-architecture/internal/presentation/response"
 )
 
 func Logger(logger logger.Logger) gin.HandlerFunc {
@@ -41,7 +41,7 @@ func logErrors(ctx *gin.Context, params map[string]any, logger logger.Logger) {
 		case validator.ValidationErrors:
 			params["status_code"] = http.StatusBadRequest
 			errors = append(errors, err)
-		case *httperror.ResponseError:
+		case *response.ResponseError:
 			params["status_code"] = e.GetCode()
 			errors = append(errors, e.OriginalError())
 		default:

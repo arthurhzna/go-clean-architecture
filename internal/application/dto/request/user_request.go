@@ -5,7 +5,7 @@ type RegisterUserRequest struct {
 	Password        string `json:"password"`
 	ConfirmPassword string `json:"confirm_password"`
 	Email           string `json:"email"`
-	RoleID          int64  `json:"role_id"`
+	Role            string `json:"role"`
 }
 
 type LoginUserRequest struct {

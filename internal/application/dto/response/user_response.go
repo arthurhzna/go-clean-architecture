@@ -1,10 +1,10 @@
 package response
 
 type UserResponse struct {
-	UUID   string
-	Name   string
-	Email  string
-	RoleID int64
+	UUID  string
+	Name  string
+	Email string
+	Role  string
 }
 
 type RegisterResponse struct {

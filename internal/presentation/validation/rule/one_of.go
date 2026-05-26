@@ -1,20 +1,16 @@
 package rule
 
 import (
-	"regexp"
 	"strings"
 
 	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation/constant"
 	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation/core"
 )
 
-var emailRegex = regexp.MustCompile(
-	`^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`,
-)
-
-func Email(
+func OneOf(
 	field string,
 	value string,
+	allowed []string,
 ) core.Rule {
 
 	return func() core.FieldError {
@@ -23,15 +19,16 @@ func Email(
 			return nil
 		}
 
-		if !emailRegex.MatchString(value) {
-
-			return core.NewValidationError(
-				field,
-				constant.TagEmail,
-				"",
-			)
+		for _, v := range allowed {
+			if value == v {
+				return nil
+			}
 		}
 
-		return nil
+		return core.NewValidationError(
+			field,
+			constant.TagOneOf,
+			strings.Join(allowed, " "),
+		)
 	}
 }
