@@ -6,4 +6,7 @@ var (
 	ErrInvalidRole = errors.New(
 		"role",
 	)
+	ErrForbidden = errors.New(
+		"forbidden",
+	)
 )

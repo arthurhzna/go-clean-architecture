@@ -15,6 +15,9 @@ func MapError(err error) error {
 	case errordomain.ErrInvalidRole:
 		return NewBadRequestError(err)
 
+	case errordomain.ErrForbidden:
+		return NewForbiddenError(err)
+
 	case errordomain.ErrUserNotFound,
 		errordomain.ErrEmailNotFound,
 		errordomain.ErrDeviceNotFound:

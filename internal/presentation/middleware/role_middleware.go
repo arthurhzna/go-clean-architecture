@@ -1,28 +1,40 @@
 package middleware
 
 import (
+	enumdomain "github.com/arthurhzna/go-clean-architecture/internal/domain/enum"
+	errordomain "github.com/arthurhzna/go-clean-architecture/internal/domain/error"
+	"github.com/arthurhzna/go-clean-architecture/internal/domain/security"
+	constants "github.com/arthurhzna/go-clean-architecture/internal/presentation/middleware/constant"
+	"github.com/arthurhzna/go-clean-architecture/internal/presentation/response"
 	"github.com/gin-gonic/gin"
 )
 
-func CheckRole(roles []string) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		userClaims := c.Request.Context().Value(constants.UserLogin)
+func CheckRole(roles ...string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		userClaims := ctx.Request.Context().Value(constants.UserLogin)
 		if userClaims == nil {
-			responseUnauthorized(c, errConstant.ErrUnauthorized.Error())
+			ctx.Error(response.MapError(errordomain.ErrInvalidCredential))
 			return
 		}
 
-		user, ok := userClaims.(*dto.UserResponse)
+		claims, ok := userClaims.(*security.TokenClaims)
 		if !ok {
-			responseUnauthorized(c, errConstant.ErrUnauthorized.Error())
+			ctx.Error(response.MapError(errordomain.ErrInvalidCredential))
 			return
 		}
 
-		if !contains(roles, user.Role) {
-			responseUnauthorized(c, errConstant.ErrUnauthorized.Error())
+		roleName, ok := enumdomain.RoleIDToName[claims.RoleID]
+		if !ok {
+			ctx.Error(response.MapError(errordomain.ErrInvalidRole))
 			return
 		}
-		c.Next()
+
+		if !contains(roles, roleName) {
+			ctx.Error(response.MapError(errordomain.ErrForbidden))
+			return
+		}
+
+		ctx.Next()
 	}
 }
 
@@ -32,5 +44,6 @@ func contains(roles []string, role string) bool {
 			return true
 		}
 	}
+
 	return false
 }

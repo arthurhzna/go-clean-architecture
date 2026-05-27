@@ -1,6 +1,11 @@
 package constants
 
+type ContextKey string
+
 const (
-	UserLogin = "user_login"
-	Token     = "token"
+	UserLogin ContextKey = "user_login"
+)
+
+const (
+	BearerSchema = "Bearer "
 )

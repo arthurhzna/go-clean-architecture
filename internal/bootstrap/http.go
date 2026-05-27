@@ -7,9 +7,10 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/arthurhzna/go-clean-architecture/internal/domain/logger"
-
 	"github.com/arthurhzna/go-clean-architecture/internal/config"
+	"github.com/arthurhzna/go-clean-architecture/internal/domain/enum"
+	"github.com/arthurhzna/go-clean-architecture/internal/domain/logger"
+	"github.com/arthurhzna/go-clean-architecture/internal/domain/security"
 	"github.com/arthurhzna/go-clean-architecture/internal/presentation/controller"
 	"github.com/arthurhzna/go-clean-architecture/internal/presentation/middleware"
 	"github.com/gin-contrib/cors"
@@ -23,20 +24,29 @@ type HttpServer struct {
 	logger logger.Logger
 }
 
-func NewHTTPServer(cfg *config.Config, logger logger.Logger) *HttpServer {
-	appCfg := cfg.App
-	httpCfg := cfg.HttpServer
-	gin.SetMode(appCfg.Environment)
+func NewHTTPServer(
+	cfg *config.Config,
+	logger logger.Logger,
+	jwtUtil security.TokenService,
+	controller *Controller,
+) *HttpServer {
+	gin.SetMode(cfg.App.Environment)
 	router := gin.New()
 	router.ContextWithFallback = true
 	router.HandleMethodNotAllowed = true
 
-	RegisterMiddleware(router, cfg.HttpServer, logger)
+	RegisterGlobalMiddleware(router, cfg.HttpServer, logger)
+
+	RegisterRoutesApp(router, controller.AppController)
+
+	api := NewApiGroup(router)
+	RegisterRoutesAuth(api, controller.UserController)
+	RegisterRoutesDevice(api, controller.DeviceController, jwtUtil, cfg.HttpServer.ApiKey)
 
 	return &HttpServer{
 		cfg: cfg,
 		server: &http.Server{
-			Addr:    fmt.Sprintf("%s:%d", httpCfg.Host, httpCfg.Port),
+			Addr:    fmt.Sprintf("%s:%d", cfg.HttpServer.Host, cfg.HttpServer.Port),
 			Handler: router,
 		},
 		logger: logger,
@@ -62,7 +72,7 @@ func (s *HttpServer) Shutdown() {
 	s.logger.Info("HTTP server shut down gracefully")
 }
 
-func RegisterMiddleware(router *gin.Engine, cfg *config.HttpServerConfig, logger logger.Logger) {
+func RegisterGlobalMiddleware(router *gin.Engine, cfg *config.HttpServerConfig, logger logger.Logger) {
 	middlewares := []gin.HandlerFunc{
 		gzip.Gzip(gzip.BestSpeed),
 		middleware.Logger(logger),
@@ -80,14 +90,57 @@ func RegisterMiddleware(router *gin.Engine, cfg *config.HttpServerConfig, logger
 	router.Use(middlewares...)
 }
 
-func RegisterRoutes(
+func RegisterRoutesApp(
 	router *gin.Engine,
 	appController *controller.AppController,
 ) {
 	router.NoRoute(appController.RouteNotFound)
 	router.NoMethod(appController.MethodNotAllowed)
+	router.GET("/health", appController.Health)
+}
 
-	api := router.Group("/apiv1")
+func NewApiGroup(router *gin.Engine) *gin.RouterGroup {
+	return router.Group("/api/v1")
+}
 
-	api.GET("/health", appController.Health)
+func RegisterRoutesAuth(
+	api *gin.RouterGroup,
+	appController *controller.UserController,
+) {
+
+	auth := api.Group("/auth")
+
+	{
+		auth.POST(
+			"/login",
+			appController.Login,
+		)
+
+		auth.POST(
+			"/register",
+			appController.Register,
+		)
+	}
+}
+
+func RegisterRoutesDevice(
+	api *gin.RouterGroup,
+	appController *controller.DeviceController,
+	jwtUtil security.TokenService,
+	apiKey string,
+) {
+
+	device := api.Group(
+		"/devices",
+		middleware.AuthenticateWithToken(jwtUtil),
+		middleware.AuthenticateWithApiKey(apiKey),
+		middleware.CheckRole(enum.RoleAdmin, enum.RoleCustomer),
+	)
+
+	{
+		device.POST(
+			"/find",
+			appController.FindByID,
+		)
+	}
 }

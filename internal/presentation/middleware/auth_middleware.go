@@ -1,3 +1,5 @@
+// internal/presentation/middleware/auth_middleware.go
+
 package middleware
 
 import (
@@ -5,29 +7,66 @@ import (
 	"strings"
 
 	errordomain "github.com/arthurhzna/go-clean-architecture/internal/domain/error"
+	"github.com/arthurhzna/go-clean-architecture/internal/domain/security"
 	constants "github.com/arthurhzna/go-clean-architecture/internal/presentation/middleware/constant"
 	"github.com/arthurhzna/go-clean-architecture/internal/presentation/response"
+
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
 )
 
-func AuthenticateWithToken() gin.HandlerFunc {
+func AuthenticateWithToken(
+	jwtUtils security.TokenService,
+) gin.HandlerFunc {
+
 	return func(ctx *gin.Context) {
-		token := ctx.GetHeader(constants.Authorization)
-		if token == "" {
-			ctx.Error(response.MapError(errordomain.ErrInvalidCredential))
-			return
-		}
 
-		err := validateBearerToken(ctx, token)
+		token := ctx.GetHeader(
+			constants.Authorization,
+		)
+
+		token, err := extractAndValidateBearerToken(
+			token,
+		)
+
 		if err != nil {
 			ctx.Error(response.MapError(err))
 			return
 		}
 
-		err = validateAPIKey(ctx)
+		claims, err := jwtUtils.Parse(token)
 		if err != nil {
 			ctx.Error(response.MapError(err))
+			return
+		}
+
+		requestContext := context.WithValue(
+			ctx.Request.Context(),
+			constants.UserLogin,
+			claims,
+		)
+
+		ctx.Request = ctx.Request.WithContext(
+			requestContext,
+		)
+
+		ctx.Next()
+	}
+}
+
+func AuthenticateWithApiKey(
+	apiKeyApp string,
+) gin.HandlerFunc {
+
+	return func(ctx *gin.Context) {
+
+		apiKeyClient := ctx.GetHeader(
+			constants.XApiKey,
+		)
+
+		if apiKeyClient != apiKeyApp {
+			ctx.Error(response.MapError(
+				errordomain.ErrInvalidCredential,
+			))
 			return
 		}
 
@@ -35,61 +74,29 @@ func AuthenticateWithToken() gin.HandlerFunc {
 	}
 }
 
-func AuthenticateWithoutToken() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		err := validateAPIKey(ctx)
-		if err != nil {
-			ctx.Error(response.MapError(err))
-			return
-		}
-		ctx.Next()
-	}
-}
+func extractAndValidateBearerToken(
+	token string,
+) (string, error) {
 
-func validateBearerToken(ctx *gin.Context, token string, jwtSecretKey string) error {
-	if !strings.Contains(token, "Bearer") {
-		return errordomain.ErrInvalidCredential
+	if token == "" {
+		return "", errordomain.ErrInvalidCredential
 	}
 
-	tokenString := extractBearerToken(token)
-	if tokenString == "" {
-		return errordomain.ErrInvalidCredential
+	if !strings.HasPrefix(
+		token,
+		constants.BearerSchema,
+	) {
+		return "", errordomain.ErrInvalidCredential
 	}
 
-	claims := &dto.Claims{}
-	tokenJwt, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
-		_, ok := token.Method.(*jwt.SigningMethodHMAC)
-		if !ok {
-			return nil, errordomain.ErrInvalidCredential
-		}
+	rawToken := strings.TrimPrefix(
+		token,
+		constants.BearerSchema,
+	)
 
-		jwtSecret := []byte(jwtSecretKey)
-		return jwtSecret, nil
-	})
-
-	if err != nil || !tokenJwt.Valid {
-		return errordomain.ErrInvalidCredential
+	if rawToken == "" {
+		return "", errordomain.ErrInvalidCredential
 	}
 
-	userLogin := ctx.Request.WithContext(context.WithValue(ctx.Request.Context(), constants.UserLogin, claims.User))
-	ctx.Request = userLogin
-	ctx.Set(constants.Token, token)
-	return nil
-}
-
-func extractBearerToken(token string) string {
-	arrayToken := strings.Split(token, " ")
-	if len(arrayToken) == 2 {
-		return arrayToken[1]
-	}
-	return ""
-}
-
-func validateAPIKey(ctx *gin.Context, apiKeyApp string) error {
-	apiKeyClient := ctx.GetHeader(constants.XApiKey)
-
-	if apiKeyClient != apiKeyApp {
-		return errordomain.ErrInvalidCredential
-	}
-	return nil
+	return rawToken, nil
 }

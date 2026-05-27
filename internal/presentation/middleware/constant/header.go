@@ -1,8 +1,6 @@
 package constants
 
-import "net/textproto"
-
-var (
-	XApiKey       = textproto.CanonicalMIMEHeaderKey("api-key")
-	Authorization = textproto.CanonicalMIMEHeaderKey("authorization")
+const (
+	XApiKey       = "X-API-Key"
+	Authorization = "Authorization"
 )

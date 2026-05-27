@@ -1,19 +1,15 @@
 package encryptutils
 
 import (
+	"github.com/arthurhzna/go-clean-architecture/internal/domain/security"
 	"golang.org/x/crypto/bcrypt"
 )
-
-type BcryptEncryptor interface {
-	Hash(password string) (string, error)
-	Check(password, hash string) bool
-}
 
 type bcryptEncryptor struct {
 	cost int
 }
 
-func NewBcryptEncryptor(cost int) *bcryptEncryptor {
+func NewBcryptEncryptor(cost int) security.PasswordHasher {
 	return &bcryptEncryptor{
 		cost: cost,
 	}
