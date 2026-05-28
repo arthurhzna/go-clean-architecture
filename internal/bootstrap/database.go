@@ -12,23 +12,22 @@ func NewDatabase(
 	log *logging.ZeroLogger,
 ) *sqlx.DB {
 
-	dbCfg := cfg.Database
-
 	db := database.NewDatabase(
-		dbCfg.Host,
-		dbCfg.Port,
-		dbCfg.Username,
-		dbCfg.Password,
-		dbCfg.DbName,
-		dbCfg.Sslmode,
-		dbCfg.MaxIdleConn,
-		dbCfg.MaxOpenConn,
-		dbCfg.MaxConnLifetime,
+		cfg.Database.Host,
+		cfg.Database.Port,
+		cfg.Database.Username,
+		cfg.Database.Password,
+		cfg.Database.DbName,
+		cfg.Database.Sslmode,
+		cfg.Database.MaxIdleConn,
+		cfg.Database.MaxOpenConn,
+		cfg.Database.MaxConnLifetime,
 	)
 
 	pool, err := db.Connect()
 	if err != nil {
 		log.Fatal(err)
+		panic(err)
 	}
 
 	return pool

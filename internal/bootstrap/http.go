@@ -40,7 +40,7 @@ func NewHTTPServer(
 	RegisterRoutesApp(router, controller.AppController)
 
 	api := NewApiGroup(router)
-	RegisterRoutesAuth(api, controller.UserController)
+	RegisterRoutesAuth(api, controller.UserController, cfg.HttpServer.ApiKey)
 	RegisterRoutesDevice(api, controller.DeviceController, jwtUtil, cfg.HttpServer.ApiKey)
 
 	return &HttpServer{
@@ -106,9 +106,13 @@ func NewApiGroup(router *gin.Engine) *gin.RouterGroup {
 func RegisterRoutesAuth(
 	api *gin.RouterGroup,
 	appController *controller.UserController,
+	apiKey string,
 ) {
 
-	auth := api.Group("/auth")
+	auth := api.Group(
+		"/auth",
+		middleware.AuthenticateWithApiKey(apiKey),
+	)
 
 	{
 		auth.POST(

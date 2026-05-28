@@ -1,32 +1,24 @@
-# Stage 1: Build the Go binary
-FROM golang:1.23-alpine AS builder
+FROM golang:1.19 AS build-stage
 
-# Set the working directory
 WORKDIR /app
 
-# Copy the application source code
+ENV GOPROXY=https://goproxy.io,direct
+
 COPY . .
 
-# Build the Go binary
-RUN go build -o your_ip .
+COPY ./configs/envs/.env.prod ./.env 
 
-# Stage 2: Create a lightweight image with the Go binary
-FROM alpine:3.18
+RUN go mod download && CGO_ENABLED=0 GOOS=linux go build -v -o /main ./cmd/api/main.go
 
-# Create a non-root user and group
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+FROM gcr.io/distroless/base-debian11:latest-amd64 AS build-release-stage
 
-# Set the working directory
-WORKDIR /app
+WORKDIR /
 
-# Copy the built Go binary from the builder stage
-COPY --from=builder /app/your_ip your_ip
+COPY --from=build-stage /main /main
+COPY --from=build-stage /app/.env /configs/envs/.env
 
-# Change ownership of the binary to the non-root user
-RUN chown appuser:appgroup /app/your_ip
+EXPOSE 8000
 
-# Run the application as the non-root user
-USER appuser
+USER nonroot:nonroot
 
-# Set the entry point command
-CMD ["./your_ip"]
+ENTRYPOINT [ "/main" , "serve"]

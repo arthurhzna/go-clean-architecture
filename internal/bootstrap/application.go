@@ -3,13 +3,11 @@ package bootstrap
 import (
 	"github.com/arthurhzna/go-clean-architecture/internal/config"
 
-	"github.com/arthurhzna/go-clean-architecture/internal/infrastructure/logging"
-
 	"github.com/arthurhzna/go-clean-architecture/internal/infrastructure/persistence/database"
 
 	bcryptinfra "github.com/arthurhzna/go-clean-architecture/internal/infrastructure/security/bcrypt"
 
-	serviceinfra "github.com/arthurhzna/go-clean-architecture/internal/infrastructure/service"
+	"github.com/arthurhzna/go-clean-architecture/internal/infrastructure/identity"
 )
 
 type Application struct {
@@ -18,31 +16,25 @@ type Application struct {
 
 func NewApplication() *Application {
 
-	// config
 	cfg := config.InitConfig()
 
-	// logger
-	log := logging.NewZeroLogger(cfg)
+	log := NewLogger(cfg)
 
-	// database
 	db := NewDatabase(
 		cfg,
 		log,
 	)
 
-	// unit of work
 	uow := database.NewUnitOfWork(
 		db,
 	)
 
-	// infrastructure
 	jwtUtil := NewJwtUtil(cfg)
 
 	passwordHasher := bcryptinfra.NewBcryptEncryptor(cfg.App.BCryptCost)
 
-	uuidGenerator := serviceinfra.NewUUIDGenerator()
+	uuidGenerator := identity.NewUUIDGenerator()
 
-	// usecase
 	useCase := NewUseCase(
 		uow,
 		passwordHasher,
@@ -50,12 +42,10 @@ func NewApplication() *Application {
 		uuidGenerator,
 	)
 
-	// controller
 	controller := NewController(
 		useCase,
 	)
 
-	// http server
 	httpServer := NewHTTPServer(
 		cfg,
 		log,
