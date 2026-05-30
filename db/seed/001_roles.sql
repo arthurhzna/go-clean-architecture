@@ -1,5 +1,5 @@
 INSERT INTO roles (name)
 VALUES
-    ('admin'),
-    ('user')
+    ('ADMIN'),
+    ('CUSTOMER')
 ON CONFLICT (name) DO NOTHING;
