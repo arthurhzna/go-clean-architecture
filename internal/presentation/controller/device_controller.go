@@ -4,18 +4,18 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/arthurhzna/go-clean-architecture/internal/application/dto/request"
-	"github.com/arthurhzna/go-clean-architecture/internal/domain/usecase"
+	"github.com/arthurhzna/go-clean-architecture/internal/application/usecase"
 
 	"github.com/arthurhzna/go-clean-architecture/internal/presentation/response"
 	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation"
 )
 
 type DeviceController struct {
-	deviceUseCase usecase.DeviceUseCase
+	deviceUseCase usecase.DeviceUseCaseIterface
 }
 
 func NewDeviceController(
-	deviceUseCase usecase.DeviceUseCase,
+	deviceUseCase usecase.DeviceUseCaseIterface,
 ) *DeviceController {
 	return &DeviceController{
 		deviceUseCase: deviceUseCase,

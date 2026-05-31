@@ -4,18 +4,18 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/arthurhzna/go-clean-architecture/internal/application/dto/request"
-	"github.com/arthurhzna/go-clean-architecture/internal/domain/usecase"
+	"github.com/arthurhzna/go-clean-architecture/internal/application/usecase"
 
 	"github.com/arthurhzna/go-clean-architecture/internal/presentation/response"
 	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation"
 )
 
 type UserController struct {
-	userUseCase usecase.UserUseCase
+	userUseCase usecase.UserUseCaseInterface
 }
 
 func NewUserController(
-	userUseCase usecase.UserUseCase,
+	userUseCase usecase.UserUseCaseInterface,
 ) *UserController {
 	return &UserController{
 		userUseCase: userUseCase,

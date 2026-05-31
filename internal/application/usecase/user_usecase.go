@@ -8,8 +8,6 @@ import (
 
 	"github.com/arthurhzna/go-clean-architecture/internal/domain/entity"
 
-	"github.com/arthurhzna/go-clean-architecture/internal/domain/usecase"
-
 	repositoryinterface "github.com/arthurhzna/go-clean-architecture/internal/domain/repository"
 
 	securitydomain "github.com/arthurhzna/go-clean-architecture/internal/domain/security"
@@ -20,6 +18,18 @@ import (
 
 	enumdomain "github.com/arthurhzna/go-clean-architecture/internal/domain/enum"
 )
+
+type UserUseCaseInterface interface {
+	Register(
+		ctx context.Context,
+		req *request.RegisterUserRequest,
+	) (*response.RegisterResponse, error)
+
+	Login(
+		ctx context.Context,
+		req *request.LoginUserRequest,
+	) (*response.LoginResponse, error)
+}
 
 type UserUseCase struct {
 	uow repositoryinterface.UnitOfWork
@@ -34,7 +44,7 @@ func NewUserUseCase(
 	passwordHasher securitydomain.PasswordHasher,
 	tokenService securitydomain.TokenService,
 	uuidGenerator servicedomain.UUIDGenerator,
-) usecase.UserUseCase {
+) UserUseCaseInterface {
 	return &UserUseCase{
 		uow:            uow,
 		passwordHasher: passwordHasher,

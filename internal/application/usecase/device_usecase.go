@@ -3,8 +3,6 @@ package usecase
 import (
 	"context"
 
-	"github.com/arthurhzna/go-clean-architecture/internal/domain/usecase"
-
 	apprequest "github.com/arthurhzna/go-clean-architecture/internal/application/dto/request"
 	appresponse "github.com/arthurhzna/go-clean-architecture/internal/application/dto/response"
 
@@ -13,13 +11,20 @@ import (
 	repositoryinterface "github.com/arthurhzna/go-clean-architecture/internal/domain/repository"
 )
 
+type DeviceUseCaseIterface interface {
+	FindByID(
+		ctx context.Context,
+		req *apprequest.FindDeviceByIDRequest,
+	) (*appresponse.DeviceResponse, error)
+}
+
 type DeviceUseCase struct {
 	deviceRepo repositoryinterface.DeviceRepository
 }
 
 func NewDeviceUseCase(
 	deviceRepo repositoryinterface.DeviceRepository,
-) usecase.DeviceUseCase {
+) DeviceUseCaseIterface {
 	return &DeviceUseCase{
 		deviceRepo: deviceRepo,
 	}

@@ -2,7 +2,6 @@ package bootstrap
 
 import (
 	"github.com/arthurhzna/go-clean-architecture/internal/application/usecase"
-	usecasedomain "github.com/arthurhzna/go-clean-architecture/internal/domain/usecase"
 
 	securitydomain "github.com/arthurhzna/go-clean-architecture/internal/domain/security"
 	servicedomain "github.com/arthurhzna/go-clean-architecture/internal/domain/service"
@@ -11,8 +10,8 @@ import (
 )
 
 type UseCase struct {
-	UserUseCase   usecasedomain.UserUseCase
-	DeviceUseCase usecasedomain.DeviceUseCase
+	UserUseCase   usecase.UserUseCaseInterface
+	DeviceUseCase usecase.DeviceUseCaseIterface
 }
 
 func NewUseCase(
