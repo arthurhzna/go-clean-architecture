@@ -10,20 +10,20 @@ import (
 	"github.com/google/uuid"
 )
 
-type JwtUtil struct {
+type TokenService struct {
 	secretKey     string
 	issuer        string
 	tokenDuration time.Duration
 	allowedAlgs   []string
 }
 
-func NewJwtUtil(
+func NewTokenService(
 	secretKey string,
 	issuer string,
 	tokenDuration time.Duration,
 	allowedAlgs []string,
-) *JwtUtil {
-	return &JwtUtil{
+) *TokenService {
+	return &TokenService{
 		secretKey:     secretKey,
 		issuer:        issuer,
 		tokenDuration: tokenDuration,
@@ -31,7 +31,7 @@ func NewJwtUtil(
 	}
 }
 
-func (h *JwtUtil) Generate(
+func (h *TokenService) Generate(
 	userID int64,
 	roleID int64,
 ) (string, error) {
@@ -59,7 +59,7 @@ func (h *JwtUtil) Generate(
 	)
 }
 
-func (h *JwtUtil) Parse(
+func (h *TokenService) Parse(
 	tokenString string,
 ) (*jwtiface.TokenClaims, error) {
 

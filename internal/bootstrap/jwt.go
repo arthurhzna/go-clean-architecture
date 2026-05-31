@@ -7,11 +7,11 @@ import (
 	jwtinfra "github.com/arthurhzna/go-clean-architecture/internal/infrastructure/security/jwt"
 )
 
-func NewJwtUtil(
+func NewTokenService(
 	cfg *config.Config,
-) *jwtinfra.JwtUtil {
+) *jwtinfra.TokenService {
 
-	return jwtinfra.NewJwtUtil(
+	return jwtinfra.NewTokenService(
 		cfg.Jwt.SecretKey,
 		cfg.Jwt.Issuer,
 		time.Duration(cfg.Jwt.TokenDuration)*time.Minute,

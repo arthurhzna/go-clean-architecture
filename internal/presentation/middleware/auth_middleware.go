@@ -30,12 +30,14 @@ func AuthenticateWithToken(
 
 		if err != nil {
 			ctx.Error(response.MapError(err))
+			ctx.Abort()
 			return
 		}
 
 		claims, err := jwtUtils.Parse(token)
 		if err != nil {
 			ctx.Error(response.MapError(err))
+			ctx.Abort()
 			return
 		}
 
@@ -67,6 +69,7 @@ func AuthenticateWithApiKey(
 			ctx.Error(response.MapError(
 				errordomain.ErrInvalidCredential,
 			))
+			ctx.Abort()
 			return
 		}
 

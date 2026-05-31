@@ -2,6 +2,8 @@ package repository
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 
 	"github.com/arthurhzna/go-clean-architecture/internal/domain/entity"
 
@@ -142,6 +144,10 @@ func (r *userRepository) FindByEmail(
 		&user.CreatedAt,
 		&user.UpdatedAt,
 	)
+
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
+	}
 
 	if err != nil {
 		return nil, err

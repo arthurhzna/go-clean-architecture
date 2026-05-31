@@ -23,9 +23,10 @@ func ErrorHandler() gin.HandlerFunc {
 		errLen := len(ctx.Errors)
 		if errLen > 0 {
 			err := ctx.Errors.Last()
+			fmt.Printf("TYPE=%T\n", err.Err)
 
 			switch e := err.Err.(type) {
-			case *validation.Errors:
+			case validation.Errors:
 				handleValidationError(ctx, e)
 			case *json.SyntaxError:
 				handleJsonSyntaxError(ctx)
@@ -37,7 +38,6 @@ func ErrorHandler() gin.HandlerFunc {
 				ctx.AbortWithStatusJSON(e.GetCode(), dto.WebResponse[any]{
 					Message: e.DisplayMessage(),
 				})
-			// todo custom validate
 			default:
 				if errors.Is(e, io.EOF) {
 					ctx.AbortWithStatusJSON(http.StatusBadRequest, dto.WebResponse[any]{
@@ -72,10 +72,10 @@ func handleParseTimeError(ctx *gin.Context, err *time.ParseError) {
 	})
 }
 
-func handleValidationError(ctx *gin.Context, err *validation.Errors) {
+func handleValidationError(ctx *gin.Context, err validation.Errors) {
 	ve := []dto.FieldError{}
 
-	for _, fe := range *err {
+	for _, fe := range err {
 		ve = append(ve, dto.FieldError{
 			Field:   fe.Field(),
 			Message: utils.TagToMsg(fe),

@@ -5,7 +5,7 @@ APP_NAME=go-clean-architecture
 DB_URL=postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=${DB_SSL_MODE}
 
 run:
-	@go run ${CURDIR}/cmd/main.go serve
+	@go run ${CURDIR}/cmd/api/main.go serve
 
 dev:
 	@air
@@ -74,8 +74,9 @@ migrate-reset:
 	-verbose up
 
 seed:
-	@psql "${DB_URL}" -f ${CURDIR}/db/seed/001_roles.sql
+	@psql "${DB_URL}" -f ${CURDIR}/db/seed/001_role.sql
 	@psql "${DB_URL}" -f ${CURDIR}/db/seed/002_admin.sql
+	@psql "${DB_URL}" -f ${CURDIR}/db/seed/003_device.sql
 
 docker-build:
 	@docker build -t ${APP_NAME} .

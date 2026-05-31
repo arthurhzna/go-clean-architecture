@@ -29,7 +29,7 @@ func NewApplication() *Application {
 		db,
 	)
 
-	jwtUtil := NewJwtUtil(cfg)
+	jwtUtil := NewTokenService(cfg)
 
 	passwordHasher := bcryptinfra.NewBcryptEncryptor(cfg.App.BCryptCost)
 

@@ -1,0 +1,803 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Go Clean Architecture API",
+    "version": "1.0.0",
+    "description": "OpenAPI specification for the Go Clean Architecture REST API. The API provides health checking, user authentication and registration, and authenticated device lookup operations."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8000"
+    }
+  ],
+  "tags": [
+    {
+      "name": "App",
+      "description": "Application status endpoints."
+    },
+    {
+      "name": "Auth",
+      "description": "User authentication and registration endpoints."
+    },
+    {
+      "name": "Devices",
+      "description": "Device management endpoints."
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "App"
+        ],
+        "summary": "Health check",
+        "description": "Returns application health status.",
+        "operationId": "healthCheck",
+        "responses": {
+          "200": {
+            "description": "Application is healthy.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                },
+                "example": {
+                  "message": "status UP"
+                }
+              }
+            }
+          },
+          "408": {
+            "$ref": "#/components/responses/RequestTimeout"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Login user",
+        "description": "Authenticates a user using email and password and returns a JWT token.",
+        "operationId": "loginUser",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/XApiKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginUserRequest"
+              },
+              "example": {
+                "email": "user@example.com",
+                "password": "password123"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginWebResponse"
+                },
+                "example": {
+                  "message": "success",
+                  "data": {
+                    "User": {
+                      "UUID": "550e8400-e29b-41d4-a716-446655440000",
+                      "Name": "John Doe",
+                      "Email": "user@example.com",
+                      "Role": "CUSTOMER"
+                    },
+                    "Token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "408": {
+            "$ref": "#/components/responses/RequestTimeout"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Register user",
+        "description": "Registers a new user with a name, email, password, confirmation password, and role.",
+        "operationId": "registerUser",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/XApiKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterUserRequest"
+              },
+              "example": {
+                "name": "John Doe",
+                "password": "password123",
+                "confirm_password": "password123",
+                "email": "user@example.com",
+                "role": "CUSTOMER"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User registered successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegisterWebResponse"
+                },
+                "example": {
+                  "message": "success",
+                  "data": {
+                    "User": {
+                      "UUID": "550e8400-e29b-41d4-a716-446655440000",
+                      "Name": "John Doe",
+                      "Email": "user@example.com",
+                      "Role": "CUSTOMER"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "408": {
+            "$ref": "#/components/responses/RequestTimeout"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/v1/devices/find": {
+      "post": {
+        "tags": [
+          "Devices"
+        ],
+        "summary": "Find device by ID",
+        "description": "Finds a device by its numeric ID. Requires JWT bearer authentication, API key authentication, and an ADMIN or CUSTOMER role.",
+        "operationId": "findDeviceById",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Authorization"
+          },
+          {
+            "$ref": "#/components/parameters/XApiKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FindDeviceByIDRequest"
+              },
+              "example": {
+                "device_id": 1
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Device found successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceWebResponse"
+                },
+                "example": {
+                  "message": "success",
+                  "data": {
+                    "ID": 1,
+                    "Name": "Device 1"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "408": {
+            "$ref": "#/components/responses/RequestTimeout"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "Authorization": {
+        "name": "Authorization",
+        "in": "header",
+        "required": true,
+        "description": "JWT bearer token. Format: Bearer {token}.",
+        "schema": {
+          "type": "string",
+          "default": "Bearer <jwt-token>"
+        },
+        "example": "Bearer <jwt-token>"
+      },
+      "XApiKey": {
+        "name": "X-API-Key",
+        "in": "header",
+        "required": true,
+        "description": "Application API key.",
+        "schema": {
+          "type": "string",
+          "default": "<api-key>"
+        },
+        "example": "<api-key>"
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Invalid request body, invalid JSON, type mismatch, missing body, or validation error.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                }
+              ]
+            },
+            "examples": {
+              "validation": {
+                "summary": "Validation error",
+                "value": {
+                  "message": "input validation error",
+                  "errors": [
+                    {
+                      "field": "email",
+                      "message": "email must be a valid email"
+                    }
+                  ]
+                }
+              },
+              "missingBody": {
+                "summary": "Missing body",
+                "value": {
+                  "message": "missing body request"
+                }
+              },
+              "invalidJson": {
+                "summary": "Invalid JSON",
+                "value": {
+                  "message": "invalid JSON syntax"
+                }
+              }
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "Invalid or missing credentials.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "example": {
+              "message": "unauthorized"
+            }
+          }
+        }
+      },
+      "Forbidden": {
+        "description": "Authenticated user is not allowed to access the resource.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "example": {
+              "message": "you are not allowed to access this resource"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Requested resource was not found.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "examples": {
+              "email": {
+                "summary": "Email not found",
+                "value": {
+                  "message": "email not found"
+                }
+              },
+              "device": {
+                "summary": "Device not found",
+                "value": {
+                  "message": "device not found"
+                }
+              }
+            }
+          }
+        }
+      },
+      "Conflict": {
+        "description": "Resource already exists.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "example": {
+              "message": "email already exists"
+            }
+          }
+        }
+      },
+      "RequestTimeout": {
+        "description": "The request exceeded the configured timeout.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "example": {
+              "message": "failed to process request in time, please try again"
+            }
+          }
+        }
+      },
+      "InternalServerError": {
+        "description": "Unexpected server error.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "example": {
+              "message": "currently our server is facing unexpected error, please try again later"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "RegisterUserRequest": {
+        "type": "object",
+        "required": [
+          "name",
+          "password",
+          "confirm_password",
+          "email",
+          "role"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 3,
+            "example": "John Doe"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "minLength": 8,
+            "example": "password123"
+          },
+          "confirm_password": {
+            "type": "string",
+            "format": "password",
+            "minLength": 8,
+            "example": "password123"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "user@example.com"
+          },
+          "role": {
+            "$ref": "#/components/schemas/Role"
+          }
+        }
+      },
+      "LoginUserRequest": {
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "user@example.com"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "example": "password123"
+          }
+        }
+      },
+      "FindDeviceByIDRequest": {
+        "type": "object",
+        "required": [
+          "device_id"
+        ],
+        "properties": {
+          "device_id": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1,
+            "example": 1
+          }
+        }
+      },
+      "Role": {
+        "type": "string",
+        "enum": [
+          "ADMIN",
+          "CUSTOMER"
+        ],
+        "example": "CUSTOMER"
+      },
+      "UserResponse": {
+        "type": "object",
+        "required": [
+          "UUID",
+          "Name",
+          "Email",
+          "Role"
+        ],
+        "properties": {
+          "UUID": {
+            "type": "string",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "Name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "Email": {
+            "type": "string",
+            "format": "email",
+            "example": "user@example.com"
+          },
+          "Role": {
+            "$ref": "#/components/schemas/Role"
+          }
+        }
+      },
+      "RegisterResponse": {
+        "type": "object",
+        "required": [
+          "User"
+        ],
+        "properties": {
+          "User": {
+            "$ref": "#/components/schemas/UserResponse"
+          }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "required": [
+          "User",
+          "Token"
+        ],
+        "properties": {
+          "User": {
+            "$ref": "#/components/schemas/UserResponse"
+          },
+          "Token": {
+            "type": "string",
+            "description": "JWT access token.",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          }
+        }
+      },
+      "DeviceResponse": {
+        "type": "object",
+        "required": [
+          "ID",
+          "Name"
+        ],
+        "properties": {
+          "ID": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1
+          },
+          "Name": {
+            "type": "string",
+            "example": "Device 1"
+          }
+        }
+      },
+      "FieldError": {
+        "type": "object",
+        "required": [
+          "field",
+          "message"
+        ],
+        "properties": {
+          "field": {
+            "type": "string",
+            "example": "email"
+          },
+          "message": {
+            "type": "string",
+            "example": "email must be a valid email"
+          }
+        }
+      },
+      "PageMetaData": {
+        "type": "object",
+        "required": [
+          "page",
+          "size",
+          "total_item",
+          "total_page",
+          "links"
+        ],
+        "properties": {
+          "page": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1
+          },
+          "size": {
+            "type": "integer",
+            "format": "int64",
+            "example": 10
+          },
+          "total_item": {
+            "type": "integer",
+            "format": "int64",
+            "example": 100
+          },
+          "total_page": {
+            "type": "integer",
+            "format": "int64",
+            "example": 10
+          },
+          "links": {
+            "$ref": "#/components/schemas/Links"
+          }
+        }
+      },
+      "Links": {
+        "type": "object",
+        "required": [
+          "self",
+          "first",
+          "prev",
+          "next",
+          "last"
+        ],
+        "properties": {
+          "self": {
+            "type": "string",
+            "example": "http://localhost:8000/api/v1/resources?page=1"
+          },
+          "first": {
+            "type": "string",
+            "example": "http://localhost:8000/api/v1/resources?page=1"
+          },
+          "prev": {
+            "type": "string",
+            "example": ""
+          },
+          "next": {
+            "type": "string",
+            "example": "http://localhost:8000/api/v1/resources?page=2"
+          },
+          "last": {
+            "type": "string",
+            "example": "http://localhost:8000/api/v1/resources?page=10"
+          }
+        }
+      },
+      "WebResponseBase": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "success"
+          },
+          "paging": {
+            "$ref": "#/components/schemas/PageMetaData"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FieldError"
+            }
+          }
+        }
+      },
+      "HealthResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/WebResponseBase"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "nullable": true
+              }
+            }
+          }
+        ]
+      },
+      "RegisterWebResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/WebResponseBase"
+          },
+          {
+            "type": "object",
+            "required": [
+              "message",
+              "data"
+            ],
+            "properties": {
+              "data": {
+                "$ref": "#/components/schemas/RegisterResponse"
+              }
+            }
+          }
+        ]
+      },
+      "LoginWebResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/WebResponseBase"
+          },
+          {
+            "type": "object",
+            "required": [
+              "message",
+              "data"
+            ],
+            "properties": {
+              "data": {
+                "$ref": "#/components/schemas/LoginResponse"
+              }
+            }
+          }
+        ]
+      },
+      "DeviceWebResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/WebResponseBase"
+          },
+          {
+            "type": "object",
+            "required": [
+              "message",
+              "data"
+            ],
+            "properties": {
+              "data": {
+                "$ref": "#/components/schemas/DeviceResponse"
+              }
+            }
+          }
+        ]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "unauthorized"
+          },
+          "data": {
+            "nullable": true
+          },
+          "paging": {
+            "$ref": "#/components/schemas/PageMetaData"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FieldError"
+            }
+          }
+        }
+      },
+      "ValidationErrorResponse": {
+        "type": "object",
+        "required": [
+          "message",
+          "errors"
+        ],
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "input validation error"
+          },
+          "data": {
+            "nullable": true
+          },
+          "paging": {
+            "$ref": "#/components/schemas/PageMetaData"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FieldError"
+            }
+          }
+        }
+      }
+    }
+  }
+}
