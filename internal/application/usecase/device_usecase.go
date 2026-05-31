@@ -11,7 +11,7 @@ import (
 	repositoryinterface "github.com/arthurhzna/go-clean-architecture/internal/domain/repository"
 )
 
-type DeviceUseCaseIterface interface {
+type DeviceUseCaseInterface interface {
 	FindByID(
 		ctx context.Context,
 		req *apprequest.FindDeviceByIDRequest,
@@ -24,7 +24,7 @@ type DeviceUseCase struct {
 
 func NewDeviceUseCase(
 	deviceRepo repositoryinterface.DeviceRepository,
-) DeviceUseCaseIterface {
+) DeviceUseCaseInterface {
 	return &DeviceUseCase{
 		deviceRepo: deviceRepo,
 	}

@@ -11,7 +11,7 @@ import (
 
 type UseCase struct {
 	UserUseCase   usecase.UserUseCaseInterface
-	DeviceUseCase usecase.DeviceUseCaseIterface
+	DeviceUseCase usecase.DeviceUseCaseInterface
 }
 
 func NewUseCase(

@@ -39,7 +39,7 @@ func (c *UserController) Register(ctx *gin.Context) {
 	}
 
 	res, err := c.userUseCase.Register(
-		ctx.Request.Context(), //ctx aja
+		ctx.Request.Context(),
 		req,
 	)
 

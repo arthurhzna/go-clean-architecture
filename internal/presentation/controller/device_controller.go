@@ -11,11 +11,11 @@ import (
 )
 
 type DeviceController struct {
-	deviceUseCase usecase.DeviceUseCaseIterface
+	deviceUseCase usecase.DeviceUseCaseInterface
 }
 
 func NewDeviceController(
-	deviceUseCase usecase.DeviceUseCaseIterface,
+	deviceUseCase usecase.DeviceUseCaseInterface,
 ) *DeviceController {
 	return &DeviceController{
 		deviceUseCase: deviceUseCase,
