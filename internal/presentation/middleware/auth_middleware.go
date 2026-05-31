@@ -15,7 +15,7 @@ import (
 )
 
 func AuthenticateWithToken(
-	jwtUtils security.TokenService,
+	TokenService security.TokenService,
 ) gin.HandlerFunc {
 
 	return func(ctx *gin.Context) {
@@ -34,7 +34,7 @@ func AuthenticateWithToken(
 			return
 		}
 
-		claims, err := jwtUtils.Parse(token)
+		claims, err := TokenService.Parse(token)
 		if err != nil {
 			ctx.Error(response.MapError(err))
 			ctx.Abort()

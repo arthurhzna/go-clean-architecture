@@ -194,14 +194,14 @@
         }
       }
     },
-    "/api/v1/devices/find": {
+    "/api/v1/devices/create": {
       "post": {
         "tags": [
           "Devices"
         ],
-        "summary": "Find device by ID",
-        "description": "Finds a device by its numeric ID. Requires JWT bearer authentication, API key authentication, and an ADMIN or CUSTOMER role.",
-        "operationId": "findDeviceById",
+        "summary": "Create device",
+        "description": "Creates a new device with a name. Requires JWT bearer authentication, API key authentication, and an ADMIN or CUSTOMER role.",
+        "operationId": "createDevice",
         "parameters": [
           {
             "$ref": "#/components/parameters/Authorization"
@@ -215,17 +215,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/FindDeviceByIDRequest"
+                "$ref": "#/components/schemas/CreateDeviceRequest"
               },
               "example": {
-                "device_id": 1
+                "name": "Device 1"
               }
             }
           }
         },
         "responses": {
-          "200": {
-            "description": "Device found successfully.",
+          "201": {
+            "description": "Device created successfully.",
             "content": {
               "application/json": {
                 "schema": {
@@ -250,11 +250,11 @@
           "403": {
             "$ref": "#/components/responses/Forbidden"
           },
-          "404": {
-            "$ref": "#/components/responses/NotFound"
-          },
           "408": {
             "$ref": "#/components/responses/RequestTimeout"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
           },
           "500": {
             "$ref": "#/components/responses/InternalServerError"
@@ -476,6 +476,19 @@
             "type": "string",
             "format": "password",
             "example": "password123"
+          }
+        }
+      },
+      "CreateDeviceRequest": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "example": "Device 1"
           }
         }
       },

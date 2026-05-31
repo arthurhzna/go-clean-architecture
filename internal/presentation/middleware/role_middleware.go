@@ -33,7 +33,6 @@ func CheckRole(roles ...string) gin.HandlerFunc {
 			ctx.Error(response.MapError(errordomain.ErrForbidden))
 			return
 		}
-		ctx.Abort()
 		ctx.Next()
 	}
 }

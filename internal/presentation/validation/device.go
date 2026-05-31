@@ -7,15 +7,15 @@ import (
 	"github.com/arthurhzna/go-clean-architecture/internal/presentation/validation/rule"
 )
 
-func FindDeviceByIDRules(
-	req *request.FindDeviceByIDRequest,
+func CreateDeviceRules(
+	req *request.CreateDeviceRequest,
 ) []core.Rule {
 
 	return []core.Rule{
 
-		rule.RequiredInt64(
-			constant.DeviceIdField,
-			req.DeviceID,
+		rule.RequiredString(
+			constant.DeviceNameField,
+			req.Name,
 		),
 	}
 }

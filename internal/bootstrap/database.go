@@ -4,13 +4,13 @@ import (
 	"github.com/arthurhzna/go-clean-architecture/internal/config"
 	loggerdomain "github.com/arthurhzna/go-clean-architecture/internal/domain/logger"
 	"github.com/arthurhzna/go-clean-architecture/internal/infrastructure/persistence/database"
-	"github.com/jmoiron/sqlx"
+	"github.com/arthurhzna/go-clean-architecture/internal/infrastructure/persistence/dbtx"
 )
 
 func NewDatabase(
 	cfg *config.Config,
 	log loggerdomain.Logger,
-) *sqlx.DB {
+) dbtx.DBTX {
 
 	db := database.NewDatabase(
 		cfg.Database.Host,

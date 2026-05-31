@@ -19,10 +19,10 @@ type unitOfWork struct {
 }
 
 func NewUnitOfWork(
-	db *sqlx.DB,
+	db dbtx.DBTX,
 ) repositoryiface.UnitOfWork {
 	return &unitOfWork{
-		conn: db,
+		conn: db.(*sqlx.DB),
 		db:   db,
 	}
 }

@@ -143,8 +143,8 @@ func RegisterRoutesDevice(
 
 	{
 		device.POST(
-			"/find",
-			appController.FindByID,
+			"/create",
+			appController.Create,
 		)
 	}
 }

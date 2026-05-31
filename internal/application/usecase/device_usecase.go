@@ -6,16 +6,16 @@ import (
 	apprequest "github.com/arthurhzna/go-clean-architecture/internal/application/dto/request"
 	appresponse "github.com/arthurhzna/go-clean-architecture/internal/application/dto/response"
 
-	errordomain "github.com/arthurhzna/go-clean-architecture/internal/domain/error"
+	"github.com/arthurhzna/go-clean-architecture/internal/domain/entity"
 
 	repositoryinterface "github.com/arthurhzna/go-clean-architecture/internal/domain/repository"
 )
 
 type DeviceUseCaseInterface interface {
-	FindByID(
+	Create(
 		ctx context.Context,
-		req *apprequest.FindDeviceByIDRequest,
-	) (*appresponse.DeviceResponse, error)
+		req *apprequest.CreateDeviceRequest,
+	) (*appresponse.CreateDeviceResponse, error)
 }
 
 type DeviceUseCase struct {
@@ -30,26 +30,24 @@ func NewDeviceUseCase(
 	}
 }
 
-func (u *DeviceUseCase) FindByID(
+func (u *DeviceUseCase) Create(
 	ctx context.Context,
-	req *apprequest.FindDeviceByIDRequest,
-) (*appresponse.DeviceResponse, error) {
+	req *apprequest.CreateDeviceRequest,
+) (*appresponse.CreateDeviceResponse, error) {
 
-	device, err := u.deviceRepo.FindByID(
-		ctx,
-		req.DeviceID,
-	)
+	device := &entity.Device{
+		Name: req.Name,
+	}
 
+	err := u.deviceRepo.Create(ctx, device)
 	if err != nil {
 		return nil, err
 	}
 
-	if device == nil {
-		return nil, errordomain.ErrDeviceNotFound
-	}
-
-	return &appresponse.DeviceResponse{
-		ID:   device.ID,
-		Name: device.Name,
+	return &appresponse.CreateDeviceResponse{
+		Device: appresponse.DeviceResponse{
+			ID:   device.ID,
+			Name: device.Name,
+		},
 	}, nil
 }

@@ -25,7 +25,7 @@ This project is a REST API template built with Go and Clean Architecture. The st
 - JWT authentication.
 - API key authentication.
 - Role based authorization.
-- Device lookup endpoint.
+- Device creation endpoint.
 - Request DTO and response DTO.
 - Centralized response format.
 - Centralized error handling.
@@ -139,7 +139,7 @@ The application layer coordinates usecase flows. It answers the question: "What 
 
 Main contents:
 
-- `usecase/`: business flow implementations such as register, login, and find device.
+- `usecase/`: business flow implementations such as register, login, and create device.
 - `dto/request/`: request DTOs for usecase input.
 - `dto/response/`: response DTOs for usecase output.
 
@@ -191,8 +191,8 @@ type LoginUserRequest struct {
 	Password string `json:"password"`
 }
 
-type FindDeviceByIDRequest struct {
-	DeviceID int64 `json:"device_id"`
+type CreateDeviceRequest struct {
+	Name string `json:"name"`
 }
 ```
 
@@ -450,7 +450,7 @@ Routes are registered in `internal/bootstrap/http.go`.
 | GET | `/health` | Public | Check application status |
 | POST | `/api/v1/auth/register` | `X-API-Key` | Register user |
 | POST | `/api/v1/auth/login` | `X-API-Key` | Login user and get JWT |
-| POST | `/api/v1/devices/find` | `X-API-Key`, Bearer token, `ADMIN`/`CUSTOMER` role | Find device by ID |
+| POST | `/api/v1/devices/create` | `X-API-Key`, Bearer token, `ADMIN`/`CUSTOMER` role | Create device |
 
 Auth headers:
 
@@ -494,15 +494,15 @@ curl -X POST http://localhost:8000/api/v1/auth/login \
   }'
 ```
 
-### Find Device
+### Create Device
 
 ```bash
-curl -X POST http://localhost:8000/api/v1/devices/find \
+curl -X POST http://localhost:8000/api/v1/devices/create \
   -H "Content-Type: application/json" \
   -H "X-API-Key: your-api-key" \
   -H "Authorization: Bearer your-jwt-token" \
   -d '{
-    "device_id": 1
+    "name": "Device Name"
   }'
 ```
 
@@ -610,20 +610,20 @@ Client
   -> WebResponse JSON
 ```
 
-Example device request flow:
+Example create device request flow:
 
 ```text
 Client
-  -> POST /api/v1/devices/find
+  -> POST /api/v1/devices/create
   -> JWT Middleware
   -> API Key Middleware
   -> Role Middleware
-  -> DeviceController.FindByID
-  -> Bind FindDeviceByIDRequest
+  -> DeviceController.Create
+  -> Bind CreateDeviceRequest
   -> Validate request
-  -> DeviceUseCase.FindByID
-  -> DeviceRepository.FindByID
-  -> DeviceResponse
+  -> DeviceUseCase.Create
+  -> DeviceRepository.Create
+  -> CreateDeviceResponse
   -> WebResponse JSON
 ```
 

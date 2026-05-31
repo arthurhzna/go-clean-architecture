@@ -22,9 +22,9 @@ func NewDeviceController(
 	}
 }
 
-func (c *DeviceController) FindByID(ctx *gin.Context) {
+func (c *DeviceController) Create(ctx *gin.Context) {
 
-	req := new(request.FindDeviceByIDRequest)
+	req := new(request.CreateDeviceRequest)
 
 	if err := ctx.ShouldBindJSON(req); err != nil {
 		ctx.Error(err)
@@ -32,13 +32,13 @@ func (c *DeviceController) FindByID(ctx *gin.Context) {
 	}
 
 	if err := validation.Validate(
-		validation.FindDeviceByIDRules(req),
+		validation.CreateDeviceRules(req),
 	); err != nil {
 		ctx.Error(err)
 		return
 	}
 
-	res, err := c.deviceUseCase.FindByID(
+	res, err := c.deviceUseCase.Create(
 		ctx.Request.Context(),
 		req,
 	)
