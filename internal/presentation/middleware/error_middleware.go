@@ -23,7 +23,6 @@ func ErrorHandler() gin.HandlerFunc {
 		errLen := len(ctx.Errors)
 		if errLen > 0 {
 			err := ctx.Errors.Last()
-			fmt.Printf("TYPE=%T\n", err.Err)
 
 			switch e := err.Err.(type) {
 			case validation.Errors:

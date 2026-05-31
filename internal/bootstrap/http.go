@@ -105,7 +105,7 @@ func NewApiGroup(router *gin.Engine) *gin.RouterGroup {
 
 func RegisterRoutesAuth(
 	api *gin.RouterGroup,
-	appController *controller.UserController,
+	userController *controller.UserController,
 	apiKey string,
 ) {
 
@@ -117,19 +117,19 @@ func RegisterRoutesAuth(
 	{
 		auth.POST(
 			"/login",
-			appController.Login,
+			userController.Login,
 		)
 
 		auth.POST(
 			"/register",
-			appController.Register,
+			userController.Register,
 		)
 	}
 }
 
 func RegisterRoutesDevice(
 	api *gin.RouterGroup,
-	appController *controller.DeviceController,
+	deviceController *controller.DeviceController,
 	jwtUtil security.TokenService,
 	apiKey string,
 ) {
@@ -144,7 +144,7 @@ func RegisterRoutesDevice(
 	{
 		device.POST(
 			"/create",
-			appController.Create,
+			deviceController.Create,
 		)
 	}
 }

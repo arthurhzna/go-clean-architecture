@@ -14,23 +14,27 @@ func CheckRole(roles ...string) gin.HandlerFunc {
 		userClaims := ctx.Request.Context().Value(constants.UserLogin)
 		if userClaims == nil {
 			ctx.Error(response.MapError(errordomain.ErrInvalidCredential))
+			ctx.Abort()
 			return
 		}
 
 		claims, ok := userClaims.(*security.TokenClaims)
 		if !ok {
 			ctx.Error(response.MapError(errordomain.ErrInvalidCredential))
+			ctx.Abort()
 			return
 		}
 
 		roleName, ok := enumdomain.RoleIDToName[claims.RoleID]
 		if !ok {
 			ctx.Error(response.MapError(errordomain.ErrInvalidRole))
+			ctx.Abort()
 			return
 		}
 
 		if !contains(roles, roleName) {
 			ctx.Error(response.MapError(errordomain.ErrForbidden))
+			ctx.Abort()
 			return
 		}
 		ctx.Next()
