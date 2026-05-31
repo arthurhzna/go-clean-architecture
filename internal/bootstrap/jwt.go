@@ -4,12 +4,13 @@ import (
 	"time"
 
 	"github.com/arthurhzna/go-clean-architecture/internal/config"
+	"github.com/arthurhzna/go-clean-architecture/internal/domain/security"
 	jwtinfra "github.com/arthurhzna/go-clean-architecture/internal/infrastructure/security/jwt"
 )
 
 func NewTokenService(
 	cfg *config.Config,
-) *jwtinfra.TokenService {
+) security.TokenService {
 
 	return jwtinfra.NewTokenService(
 		cfg.Jwt.SecretKey,

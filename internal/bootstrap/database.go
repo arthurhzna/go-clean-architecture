@@ -2,14 +2,14 @@ package bootstrap
 
 import (
 	"github.com/arthurhzna/go-clean-architecture/internal/config"
-	"github.com/arthurhzna/go-clean-architecture/internal/infrastructure/logging"
+	loggerdomain "github.com/arthurhzna/go-clean-architecture/internal/domain/logger"
 	"github.com/arthurhzna/go-clean-architecture/internal/infrastructure/persistence/database"
 	"github.com/jmoiron/sqlx"
 )
 
 func NewDatabase(
 	cfg *config.Config,
-	log *logging.ZeroLogger,
+	log loggerdomain.Logger,
 ) *sqlx.DB {
 
 	db := database.NewDatabase(
